@@ -1,4 +1,30 @@
 Cursos Abiertos
+
+## Cómo levantar
+
+Scaffold en construcción. Las instrucciones de ejecución
+se completarán y verificarán en el ticket T4.
+
+Todavía no están implementados el backend, el frontend
+ni Docker Compose.
+
+## Estado del desarrollo
+El ticket docente del 27/10/2026 habilita el desarrollo
+del scaffold mínimo.
+
+- T1: estructura y configuración inicial en preparación.
+- T2: backend mínimo pendiente.
+- T3: frontend mínimo pendiente.
+- T4: Docker Compose de desarrollo pendiente.
+- T5: release v0.1.0 pendiente.
+
+## Flujo de trabajo vigente
+Las ramas de trabajo nacen desde dev y se integran en dev.
+main recibe únicamente releases desde dev, con CHANGELOG
+actualizado y tag vX.Y.Z.
+
+Detalle en [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
+
 Webapp de comunidad de cursos gratuitos: los usuarios aportan recursos de distintas plataformas; después de una revisión, los cursos integran el catálogo comunitario y cada persona organiza su roadmap privado.
 
 Materia: Desarrollo de Software, sección S34, UTN FR La Plata, 2026. Modalidad: individual.
