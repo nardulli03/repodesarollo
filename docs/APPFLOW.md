@@ -1,136 +1,126 @@
-# APPFLOW — Mapa de navegación textual
+# APPFlow — Cursos Abiertos
 
-Versión 1.1. Las rutas siguientes pertenecen al frontend. Los endpoints HTTP se detallan en BACKEND_SCHEMA.md. No se incluyen diagramas gráficos.
+Versión 2.0. Navegación prevista. Las rutas UI no son rutas API. Todas las API siguientes llevan prefijo `/api/v1`, definido en BackendSchema.
 
-## 1. Inventario de rutas
+## 1. Sitemap
 
-| Ruta | Pantalla | Acceso | Salidas principales |
+```mermaid
+flowchart TD
+    HOME[Inicio] --> CAT[Catálogo]
+    CAT --> DETAIL[Detalle de curso]
+    HOME --> AUTH[Registro y login]
+    AUTH --> VERIFY[Verificación]
+    AUTH --> RESET[Recuperación]
+    DETAIL --> ROAD[Mi roadmap]
+    AUTH --> MINE[Mis aportes]
+    MINE --> EDIT[Aportar o editar]
+    MINE --> STATUS[Estado del aporte]
+    AUTH --> REVIEW[Revisión admin]
+    REVIEW --> DECISION[Detalle de revisión]
+```
+
+Las flechas desde auth expresan acceso tras sesión válida, no ejecución automática de acciones. Roadmap personal no se publica ni se sigue.
+
+## 2. Rutas
+
+| Ruta UI | Pantalla | Login/rol |
+| --- | --- | --- |
+| / | Inicio | Pública |
+| /catalogo | Catálogo paginado | Pública |
+| /catalogo/:id | Ficha publicada | Pública |
+| /registro | Registro | Pública |
+| /login | Login | Pública |
+| /verificar-correo | Confirmación con token en fragmento | Pública |
+| /reenviar-verificacion | Reenvío | Pública |
+| /recuperar-contrasena | Solicitud | Pública |
+| /restablecer-contrasena | Nueva contraseña con fragmento | Pública |
+| /mi-roadmap | Recorrido privado paginado | Usuario verificado |
+| /mis-aportes | Listado propio paginado | Usuario verificado |
+| /aportar | Nuevo curso | Usuario verificado |
+| /mis-aportes/:id | Estado y datos propios | Propietario |
+| /mis-aportes/:id/editar | Formulario propio | Propietario; draft/rejected/published |
+| /revision | Pendientes paginados | Admin |
+| /revision/:id | Validar aporte | Admin; no aprobar/rechazar propios |
+
+404 y acceso denegado son estados de ruta, no funciones adicionales. No hay pantalla de administración de categorías P0.
+
+## 3. Fichas de pantalla
+
+Todas usan header, mensajes y foco de UX-UI. Al entrar en área privada consultar GET /auth/me; mutaciones obtienen CSRF de GET /auth/csrf. Permisos también en servidor.
+
+| Pantalla | Objetivo/componentes | API | Estados y navegación |
 | --- | --- | --- | --- |
-| / | Inicio | Público | Cursos, roadmaps, login y registro. |
-| /cursos | Catálogo | Público | Ficha de curso, filtros, paginación. |
-| /cursos/:slug | Detalle de curso | Público si publicado | Proveedor externo, login y cambio de progreso. |
-| /roadmaps | Catálogo de roadmaps | Público | Detalle. |
-| /roadmaps/:slug | Detalle de roadmap | Público si publicado; propio si archivado y seguido | Curso, seguir, continuar, abandonar. |
-| /iniciar-sesion | Login | Público | Destino seguro, recuperación, registro. |
-| /registro | Crear cuenta | Público | Confirmación genérica, verificar correo, login y recuperación. |
-| /verificar-correo | Confirmación explícita; token por fragmento | Público | Login o reenvío. |
-| /reenviar-verificacion | Solicitar otro enlace | Público | Confirmación genérica y login. |
-| /mis-cursos | Cursos creados propios | JWT y correo verificado | Nuevo, editar, publicar, archivar. |
-| /mis-cursos/nuevo | Crear curso propio | JWT y correo verificado | Guardar borrador. |
-| /mis-cursos/:id/editar | Editar o consultar curso propio | JWT y propietario | Guardar, publicar o archivar según estado. |
-| /recuperar-contrasena | Solicitud de recuperación | Público | Confirmación y login. |
-| /restablecer-contrasena | Nueva contraseña; token recibido por fragmento | Público con token válido para confirmar | Login o nueva solicitud. |
-| /mi-aprendizaje | Seguimientos propios | Sesión | Detalle y siguiente curso. |
-| /mi-cuenta | Perfil de consulta | Sesión | Cerrar sesión y Mi aprendizaje. |
-| /admin | Entrada de administración | Administrador | Redirige a /admin/cursos. |
-| /admin/cursos | Gestión de cursos | Administrador | Nuevo, editar y consultar archivado. |
-| /admin/cursos/nuevo | Alta | Administrador | Guardar borrador y volver al listado. |
-| /admin/cursos/:id/editar | Edición o consulta según estado | Administrador | Guardar, publicar, archivar, volver. |
-| /admin/categorias | Gestión de categorías | Administrador | Crear, renombrar y eliminar. |
-| /admin/roadmaps | Gestión de roadmaps | Administrador | Nuevo y detalle administrativo. |
-| /admin/roadmaps/nuevo | Alta de recorrido | Administrador | Guardar borrador. |
-| /admin/roadmaps/:id/editar | Editor de borrador o lectura de publicado/archivado | Administrador | Guardar, publicar o archivar. |
-| Cualquier otra | 404 | Todos | Inicio o catálogo. |
+| Inicio | Buscar; buscador y CTA aportar | Ninguna necesaria hasta buscar | Buscar dirige catálogo con q; aportar dirige auth o formulario. |
+| Catálogo | Descubrir; filtros/cards/paginador | GET /courses; GET /categories | Loading/ok/empty/error; ficha, agregar propio y aportar. Categorías con cargar más. |
+| Ficha | Evaluar; metadatos/link/CTA | GET /courses/{id}; POST /me/roadmap/items tras consultar versión propia | Loading/ok/404/error; volver a filtros; sin sesión login con retorno. |
+| Registro | Crear identidad; nombre/email/password | POST /auth/register | Inicial/enviando/422/429/202 genérico; reenvío, login o recuperación. |
+| Login | Ingresar; email/password | POST /auth/login | Inicial/enviando/401/403 correo/429/503; éxito destino seguro o mi-roadmap. |
+| Verificar correo | Confirmar; botón explícito | POST /auth/verify-email | Sin token/inicial/confirmando/ok/inválido; login o reenvío; GET no confirma. |
+| Reenvío | Pedir enlace; email | POST /auth/resend-verification | Enviando/202/422/429/error; volver login. |
+| Recuperación | Recuperar acceso; email | POST /auth/forgot-password | Enviando/202/422/429/error; volver login. |
+| Restablecimiento | Cambiar password; nueva/confirmación | POST /auth/reset-password | Token ausente/inválido/enviando/ok/422; éxito login sin sesión automática. |
+| Mi roadmap | Planificar; items/orden/avance/paginador | GET /me/roadmap; POST /me/roadmap/items/{id}/move; PATCH /me/roadmap/items/{id}; DELETE /me/roadmap/items/{id} | Loading/ok/empty/error/409; catálogo, ficha o confirmación de retiro; aviso de no disponible. |
+| Mis aportes | Ver estados; filtros/cards/CTA | GET /me/courses | Loading/ok/empty/error; alta, detalle o edición. |
+| Aportar | Cargar metadatos; formulario | GET /categories; POST /me/courses; POST /me/courses/{id}/submit | Inicial/guardando/borrador guardado/422/409/error; guardar crea borrador, enviar primero guarda y luego submit con nueva versión. |
+| Estado propio | Entender revisión; ficha/motivo | GET /me/courses/{id}; DELETE /me/courses/{id} | Loading/ok/404/error/409; editar si habilitado, reenviar desde edición, archivar confirmado. |
+| Editar propio | Corregir; formulario, aviso despublicación | GET /me/courses/{id}; GET /categories; GET /categories/{id}; PATCH /me/courses/{id}; POST /me/courses/{id}/submit | Loading/dirty/enviando/422/409; conservar texto al fallar; publicado requiere confirmar retiro temporal; volver detalle. |
+| Pendientes | Revisar cola; tabla/cards/paginador | GET /admin/reviews | Loading/ok/empty/error/403; abrir revisión. |
+| Detalle revisión | Aprobar/rechazar; metadatos/check/link/motivo | GET /admin/reviews/{id}; POST /admin/reviews/{id}/decision; DELETE /admin/courses/{id} | Loading/ok/422/403 auto-revisión/409/error; confirmación y retorno a pendientes. |
 
-El acceso administrativo con IDs no vuelve públicos esos recursos. Las rutas de frontend no determinan autorización real; cada endpoint comprueba sesión y rol.
+Cerrar sesión desde header: POST /auth/logout, borrar caché privada y volver inicio. Datos de cuenta en menú desde /auth/me, no pantalla nueva. Antes de agregar desde ficha, GET /me/roadmap devuelve version; luego POST /me/roadmap/items y actualizar vista. Una respuesta 409 de duplicado se muestra como “Este curso ya está en tu roadmap”.
 
-## 2. Flujo público de descubrimiento
+## 4. Flujos completos
 
-1. Inicio presenta búsqueda y acceso a roadmaps.
-2. Buscar lleva a /cursos?q=consulta&page=1. Los filtros se expresan como category_id, level y language; sort controla orden.
-3. Elegir una tarjeta abre /cursos/:slug.
-4. Ir al curso abre el recurso externo en una nueva pestaña, sin cambiar progreso ni enviar credenciales de esta aplicación al proveedor.
-5. Volver al catálogo conserva filtros mediante historial y URL.
+### 4.1 Aportar curso
 
-Alternativas: cero resultados permite limpiar filtros; error de red permite reintentar; slug no público muestra 404. No se redirige a login para leer un curso público.
+1. Usuario verificado abre /aportar; obtiene categorías paginadas.
+2. Completa metadatos y declaración sí/no de toma; campos no informados permitidos solo según PRD.
+3. Guardar borrador hace POST /me/courses; tras 201 guardar id/version en estado de UI y navegar a edición si continúa. Así reintentar envío no crea otra alta.
+4. Enviar hace submit sobre id guardado, expected_version vigente; resultado in_review dirige estado del aporte.
+5. Si falla validación, mantener texto y señalar campos. Si falla red tras alta, indicar resultado incierto y revisar Mis aportes antes de repetir. URL única reduce duplicación pero no garantiza idempotencia de un alta sin URL.
+6. Autor consulta resultado; rechazo muestra motivo. Editar rejected vuelve draft; guardar y enviar nuevamente. In_review solo consulta/retiro.
 
-## 3. Registro e inicio de sesión
+### 4.2 Descubrir y organizar
 
-1. Registro valida datos en cliente y obtiene un token CSRF si no lo tiene.
-2. Enviar solicita alta; se bloquea doble envío en UI.
-3. Respuesta 202 muestra confirmación genérica e indica revisar correo; ofrece reenvío, login o recuperación.
-4. Abrir el enlace de verificación, confirmar y volver a login. Login con contraseña correcta y correo verificado recibe cookie JWT y consulta /auth/me. Si el correo sigue pendiente, no se emite JWT y se ofrece reenvío.
-5. Con identidad válida, redirige al next interno permitido o /mi-aprendizaje.
+1. Visitante busca catálogo y abre ficha publicada.
+2. Agregar sin sesión lleva login con returnTo interno; tras login volver a ficha y usuario confirma acción, sin ejecutarla automáticamente.
+3. Obtener version del roadmap propio y agregar curso; 201 confirma, 409 duplicado informa sin repetir.
+4. En /mi-roadmap mover con botones o posición global; petición move desplaza items aunque cambien de página. Reconsultar tras respuesta.
+5. Cambiar avance PATCH y actualizar summary; quitar pide confirmar pérdida del progreso del item, DELETE y reconsultar. Si la última página queda vacía volver a anterior.
+6. Curso retirado del catálogo conserva item/título/avance con aviso; no abre enlace ni cambia progreso hasta publicación nueva, pero se puede quitar.
 
-Si se llegó a login al intentar seguir un roadmap, next contiene únicamente su ruta de detalle, no una acción pendiente. Después del login se vuelve a esa ficha y el usuario elige seguir. Esto evita repetir mutaciones accidentalmente y mantiene el resultado visible.
+### 4.3 Validar aporte
 
-Un usuario autenticado que visita login o registro se lleva a Mi aprendizaje. Recuperación y restablecimiento siguen accesibles para permitir recuperación explícita; reset revoca también su sesión actual.
+1. Admin abre pendientes y selecciona curso; si es propio no puede aprobar/rechazar.
+2. Abre enlace externo por acción explícita; comprueba contenido gratuito, metadatos y disponibilidad.
+3. Aprueba con confirmación url_checked o rechaza con motivo de 10–1000 caracteres.
+4. POST decision con expected_version actual; transacción guarda revisión y estado. Aprobado aparece catálogo; rechazado solo autor/admin.
+5. 409 indica que cambió mientras se revisaba: recargar antes de decidir. Si falla red, reconsultar estado, no afirmar aprobación.
 
-## 4. Recuperación y restablecimiento
+### 4.4 Registro y verificación
 
-1. Desde login se elige “Olvidé mi contraseña”.
-2. Se ingresa email y se envía solicitud con CSRF.
-3. Se muestra respuesta uniforme, exista o no la cuenta. Un límite de IP muestra espera; un límite interno por email conserva la respuesta uniforme.
-4. El correo de una cuenta activa contiene enlace a /restablecer-contrasena con token en fragmento.
-5. La SPA captura token, limpia el fragmento y solicita nueva contraseña con confirmación.
-6. Confirmar envía token en cuerpo HTTPS, nueva contraseña y CSRF. El token nunca se envía en query string de API.
-7. Al aceptar, informa éxito, elimina datos privados de caché y lleva a login por acción del usuario.
+1. Registrar y mostrar 202 genérico con enlace a reenvío/login/recuperación.
+2. Abrir email de Mailpit, capturar token del fragmento y limpiar URL del historial; conservar solo en memoria.
+3. Botón Confirmar envía token con CSRF; éxito lleva a login sin emitir JWT.
+4. Token inválido/vencido/usado ofrece reenvío; 202 del reenvío no confirma existencia de cuenta.
 
-Token inválido, usado o vencido converge en una única pantalla con acción “Solicitar otro enlace”. Si se recarga después de limpiar el fragmento, debe reabrirse el correo. Un correo duplicado no permite dos resets. No hay login automático ni aceptación de enlaces desde dominios elegidos por el cliente.
+### 4.5 Recuperar contraseña
 
-## 5. Seguimiento y aprendizaje
+1. Email y 202 genérico, cuenta exista o no.
+2. Abrir enlace y limpiar fragmento; nueva contraseña y confirmación.
+3. POST reset consume token y revoca sesiones; login con nueva clave. Correo pendiente sigue requiriendo verificación.
+4. Vencido/usado: nueva solicitud. SMTP local fallido: reintento; no prometer entrega por haber recibido 202.
 
-1. Roadmaps muestra recorridos publicados.
-2. Detalle muestra objetivo y cursos en orden.
-3. “Seguir roadmap” sin sesión lleva a login con retorno seguro; con sesión ejecuta una operación idempotente.
-4. El éxito muestra progreso e incorpora el recorrido a Mi aprendizaje.
-5. “Continuar aprendizaje” abre la ficha del primer curso no completado.
-6. El estudiante puede cambiar estado a en curso o completado. Después de confirmación se reconsultan progreso y roadmaps propios.
-7. Al regresar a Mi aprendizaje se presenta el siguiente paso. Si no queda ninguno, aparece completado.
+## 5. Estados globales
 
-Si un curso aparece en varios roadmaps, su estado es común. El detalle lo explica con ayuda breve: “Tu avance de este curso se usa en todos tus roadmaps”. El usuario puede volver de completado a en curso; no se bloquea esa acción ni se mantiene un porcentaje ficticio.
+| Situación | Comportamiento |
+| --- | --- |
+| Ruta privada sin sesión/401 | Limpiar datos privados y login; returnTo solo ruta interna permitida. |
+| 403 | Conservar sesión si válida y mostrar permiso insuficiente o correo pendiente según código. |
+| 404 | Recurso no disponible, volver a listado; no revelar título ajeno. |
+| 409 | Mantener texto en memoria, avisar cambio y ofrecer recargar; no sobrescribir silenciosamente. |
+| 422 | Resumen enfocable y error junto al campo. |
+| 429 | Mostrar espera de Retry-After y reintento manual. |
+| Error red/503 | Conservar texto no secreto en memoria; reintentar, sin confirmar guardado incierto. |
 
-## 6. Abandono y archivado
-
-“Dejar de seguir” abre un diálogo con explicación de que se conserva el avance de cursos. Cancelar no realiza solicitudes; confirmar elimina únicamente el seguimiento. La pantalla queda como roadmap público si sigue publicado. Si estaba archivado, después de abandonar deja de estar autorizado su detalle y se vuelve a Mi aprendizaje con confirmación.
-
-Si administración archiva un roadmap entre su consulta y el intento de seguimiento, el backend rechaza el seguimiento y la interfaz explica que ya no está disponible. Si ya era seguido, permanece visible en el panel con etiqueta Archivado.
-
-## 7. Administración de cursos
-
-1. Administración abre listado con filtros de estado.
-2. Nuevo curso abre formulario mínimo con título obligatorio.
-3. Guardar crea borrador y lleva a su edición con ID y versión devueltos.
-4. Completar datos y guardar actualiza la versión.
-5. Publicar muestra revisión y exige versión vigente; si es válido cambia estado y muestra enlace a ficha pública.
-6. Editar publicado permite corregir campos con todas las validaciones editoriales. El slug permanece estable.
-7. Archivar abre confirmación. Si no hay dependencias protegidas, retira del catálogo y pasa a consulta.
-
-Validación de campos mantiene formulario y enfoca resumen. Conflicto de versión conserva texto local; ofrece cargar servidor tras aviso. Dependencia de roadmap impide archivado con explicación. Se puede abandonar un borrador sin completarlo; no se permite publicarlo incompleto. Un archivado no se revierte desde la aplicación.
-
-## 8. Administración de roadmaps
-
-1. Nuevo crea borrador con título.
-2. Se edita objetivo, nivel y resumen.
-3. Seleccionar cursos publicados agrega pasos; subir, bajar y quitar actualiza lista local.
-4. Guardar pasos reemplaza la lista completa atómicamente, con versión.
-5. Publicar valida de nuevo cursos, pasos y contenido, y confirma que quedará inmutable.
-6. Tras publicar, el editor se transforma en consulta con botón Archivar.
-
-Un error al guardar pasos no deja la mitad de la lista persistida. Un curso que fue archivado mientras se editaba impide publicación. Archivar conserva pasos y seguimientos previos; no habilita edición. Una nueva propuesta de recorrido se crea como otro borrador.
-
-## 9. Sesión y restricciones de navegación
-
-Al entrar a una ruta privada se consulta sesión. Mientras se resuelve se muestra carga, sin datos privados residuales. Sin sesión se redirige a login. Con rol insuficiente se muestra 403 y salida al sitio público.
-
-Al recibir 401 durante una acción, se borra caché privada y se solicita login. No se reenvía automáticamente el formulario previo. Logout revoca sesión en servidor antes de confirmar; ante fallo de red no afirmar revocación. Una vez confirmado, limpiar caché, cookie mediante servidor y volver a Inicio.
-
-El parámetro next solo acepta rutas internas conocidas; rechazar URL absoluta, doble barra, javascript y variantes codificadas que eludan normalización. El destino por defecto es Mi aprendizaje. El botón Atrás no debe recuperar datos privados de otra sesión desde caché.
-
-## 10. Flujo de errores transversal
-
-422: conservar datos no secretos y mostrar campos afectados. 409: reconsultar el recurso antes de proponer repetir. 429: mostrar segundos de Retry-After y habilitar reintento después de la espera. No iniciar múltiples contadores contradictorios. 503: informar indisponibilidad temporal, mantener contexto y permitir volver. Escritura con resultado desconocido: reconsultar antes de repetir.
-
-Todas las pantallas de error ofrecen navegación útil. El usuario no debe quedar atrapado en una redirección entre login, permisos y una ruta inexistente.
-
-## 11. Flujo de verificación obligatoria
-
-Registro encola enlace de 24 horas. El usuario abre /verificar-correo, la SPA extrae token del fragmento y limpia la URL. El botón “Confirmar correo” realiza POST /auth/verify-email con CSRF. Éxito muestra confirmación y lleva a login por acción del usuario; no autentica automáticamente. Token vencido/usado/alterado conduce a reenvío con respuesta genérica. Un GET del enlace, incluido el de un escáner de correo, no confirma la cuenta.
-
-Login con contraseña válida y correo pendiente devuelve EMAIL_NOT_VERIFIED y ofrece /reenviar-verificacion. Recuperar contraseña no cambia ese estado ni permite saltar la verificación. El next seguro puede acompañar estos pasos como ruta interna validada, sin ejecutar acciones pendientes después de autenticar.
-
-## 12. Flujo de CRUD del estudiante autor
-
-Después de verificar email e iniciar sesión, el menú ofrece /mis-cursos. Crear abre formulario y guarda propietario desde JWT, nunca desde un campo. La edición usa /me/authored-courses y conserva versión. Publicar exige los mismos datos completos que administración; archivar aplica las mismas dependencias. Un curso ajeno devuelve 404. Las categorías y los roadmaps se consultan, pero su gestión administrativa no se habilita al autor.
-
-Si el JWT vence, volver a login y luego al destino interno permitido; no repetir escrituras automáticamente. El usuario puede estudiar y crear cursos con la misma cuenta, pero sus listados personales de aprendizaje y autoría se presentan separados y con títulos claros.
+Tokens de enlaces/password no se guardan en storage. Limpiar tokens del fragmento implica que recargar exige reabrir correo; indicar esta salida. Advertir cambios sin guardar; no prometer persistencia si se cierra navegador.

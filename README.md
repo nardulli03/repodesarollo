@@ -1,62 +1,44 @@
-# repodesarrolo — Documentación inicial
+Cursos Abiertos
+Webapp de comunidad de cursos gratuitos: los usuarios aportan recursos de distintas plataformas; después de una revisión, los cursos integran el catálogo comunitario y cada persona organiza su roadmap privado.
 
-Versión documental: 1.1. Actualización: 21 de octubre de 2026. Estado: propuesta de diseño para revisión académica; aplicación todavía no implementada.
+Materia: Desarrollo de Software, sección S34, UTN FR La Plata, 2026. Modalidad: individual.
+Repositorio: https://github.com/nardulli03/repodesarollo
+Estado: Instancia A en corrección documental. Sin aprobación docente ni T1 registrados en esta documentación. No se afirma implementación ni ejecución de pruebas.
+Rama de correcciones creada: docs/modificaciones-consigna. 
 
-## Propósito
+Qué hace
+Permite consultar el catálogo sin cuenta, registrarse, verificar correo e iniciar sesión con JWT. Un usuario verificado aporta cursos, declara si los tomó y consulta sus estados de revisión. Un administrador valida o rechaza aportes. Cada usuario gestiona un roadmap personal: agrega cursos publicados, los ordena, los quita y registra avance. Incluye recuperación de contraseña y rate limit de login.
 
-Diseñar una plataforma web de cursos gratuitos que permita descubrir recursos educativos, autenticarse, recuperar el acceso y seguir recorridos de aprendizaje. El trabajo se plantea desde la perspectiva de un estudiante de Ingeniería en Sistemas de Información en la materia Desarrollo de Software: requisitos verificables, alcance realizable y decisiones técnicas justificadas.
+Stack
+React 19 + Vite + pnpm; FastAPI + uv; PostgreSQL 18.6 exigido por la SPEC; Docker y Docker Compose en desarrollo. Las versiones exactas resueltas y comprobadas se registrarán en [TRD](docs/TRD.md). No se declaran instalaciones que no se realizaron.
 
-El nombre del repositorio se conserva exactamente como fue indicado: `repodesarrolo`. Nombre provisional del producto: **Cursos Abiertos**. No se presupone acceso al repositorio remoto ni se afirma haber leído su contenido; estos archivos están preparados para incorporarse a su raíz. No se ha identificado propietario ni URL del repositorio.
+Documentación
+[SPEC](docs/SPEC.md)	Refinamiento, alcance, origen y decisiones.
+[PRD](docs/PRD.md)	Personas, historias, aceptación, requisitos y reglas.
+[TRD](docs/TRD.md)	Arquitectura, stack, seguridad y decisiones técnicas.
+[UX-UI](docs/UX-UI.md)	Tokens, componentes, estados y adaptación.
+[APPFlow](docs/APPFlow.md)	Pantallas, navegación y relación con API.
+[BackendSchema](docs/BackendSchema.md)	Datos, relaciones, estados y contratos.
+[IMPLEMENTATION_PLAN](docs/IMPLEMENTATION_PLAN.md)	Módulos, tareas, dependencias y evidencia.
+[GIT_WORKFLOW](docs/GIT_WORKFLOW.md)	Ramas, revisión, merge y commits.
+[SPEC oficial recibida](docs/referencias/SPEC.md)	Copia sin modificaciones del adjunto del 21/10.
+[Borrador del aula](docs/referencias/SPEC-borrador-clase-2026-10-20.md)	Antecedente sin modificaciones; no reemplaza la SPEC oficial.
 
-## Organización y orden de lectura
-
-| Archivo | Responsabilidad |
-| --- | --- |
-| [SPEC.md](SPEC.md) | Especificación integral: alcance, actores, requisitos y reglas de negocio. |
-| [PRD.md](PRD.md) | Problema, valor del producto, funcionalidades, historias y aceptación. |
-| [TRD.md](TRD.md) | Arquitectura, stack, seguridad, operación y decisiones técnicas. |
-| [docs/UX_UI.md](docs/UX_UI.md) | Experiencia, sistema visual textual y comportamiento por pantalla. |
-| [docs/APPFLOW.md](docs/APPFLOW.md) | Mapa textual de navegación, permisos y recorridos alternativos. |
-| [docs/BACKEND_SCHEMA.md](docs/BACKEND_SCHEMA.md) | Modelo relacional, contratos de API, validación y transacciones. |
-| [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) | Fases, dependencias, pruebas, riesgos y condiciones de entrega. |
-| [docs/RUBRICA.md](docs/RUBRICA.md) | Rúbrica propuesta de evaluación, ponderaciones y evidencia. |
-
-Todos los entregables son texto Markdown. Las tablas representan contratos y relaciones; no se incluyen imágenes, prototipos ejecutables, SQL, código de aplicación ni configuración de infraestructura.
-
-## Cómo mantener coherencia
-
-SPEC define el comportamiento obligatorio. PRD explica su valor y aceptación. TRD define la solución y BACKEND_SCHEMA concreta sus contratos. UX_UI y APPFLOW describen cómo se presenta. IMPLEMENTATION_PLAN ordena su construcción. Si una revisión cambia una regla, deben actualizarse los documentos afectados en la misma revisión; una contradicción no se resuelve eligiendo silenciosamente un archivo.
-
-Los identificadores RF, RN y RNF permiten relacionar requisitos con historias y pruebas. Las decisiones agregadas a la consigna están marcadas como propuestas o supuestos; no son confirmaciones del docente.
-
-## Supuestos de trabajo
-1. Requisito confirmado: el CRUD de cursos está habilitado a estudiantes autores sobre sus propios cursos y a administradores sobre todo el catálogo. El registro público crea estudiantes; el permiso de autoría se habilita al verificar su email, sin asignar un rol administrativo.
-2. Los cursos se realizan en plataformas externas; aquí se almacena metadata y seguimiento manual.
-3. Roadmap significa recorrido pedagógico ordenado de cursos, además del plan de implementación del proyecto, que se documenta por separado.
-4. La plataforma no cobra. No se integran pagos, certificados propios ni reproducción de video.
-5. La demostración es de baja escala, con un único despliegue Docker Compose y PostgreSQL compartido por los procesos de backend.
-6. Requisitos confirmados: JWT obligatorio para autenticación y verificación obligatoria del correo. Se propone TypeScript para React y Material UI para la interfaz; TypeScript continúa pendiente de validación.
-7. El correo se prueba con un capturador SMTP local; un entorno accesible por Internet necesita un proveedor SMTP configurado y HTTPS.
-
-## Tecnologías exigidas
-
-Frontend: React 19, Vite y pnpm. Backend: FastAPI y uv. Base de datos: PostgreSQL. Infraestructura: Docker y Docker Compose. UX/UI: estética Material clara con búsqueda protagonista, inspirada en la sencillez de google.com, sin copiar marca ni identidad.
-
-## Fuentes técnicas de referencia
-
-Se consultaron fuentes primarias para fundamentar el diseño. Los parámetros concretos de este proyecto —tiempos, umbrales, esquema y alcance— son decisiones propuestas, no valores impuestos por estas fuentes.
-
-- React: https://react.dev/versions
-- Vite: https://vite.dev/guide/
-- pnpm: https://pnpm.io/installation
-- uv: https://docs.astral.sh/uv/guides/projects/
-- JWT, buenas prácticas: https://www.rfc-editor.org/rfc/rfc8725
-- FastAPI, JWT, contraseñas y hashing: https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
-- PostgreSQL, restricciones: https://www.postgresql.org/docs/current/ddl-constraints.html
-- Docker Compose, disponibilidad y orden de arranque: https://docs.docker.com/compose/how-tos/startup-order/
-- OWASP, recuperación: https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
-- OWASP, sesiones: https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
-- Material Design: https://m3.material.io/
-- WCAG 2.2: https://www.w3.org/TR/WCAG22/
+Cómo revisar
+Leer SPEC → PRD → TRD → UX-UI → APPFlow → BackendSchema → plan. GitHub renderiza Markdown y Mermaid. Comprobar que pantallas, endpoints, requisitos e historias coincidan. La checklist oficial no fue incluida entre los adjuntos disponibles: la revisión por plantillas no se presenta como checklist oficial completada.
+Estado de las instancias
+Instancia	Estado documentado	Condición de cierre
+A: documentación	Correcciones preparadas; pendiente subir y solicitar revisión	Aprobación explícita del repo entero y recepción del T1.
+B: MVP	Pendiente de aprobación y T1	Clon limpio, seguir README y docker compose up; historias P0 operativas desde UI.
+Continuidad del 27/10	Planificada; no se afirma realizada	Tickets de pruebas y mejoras Docker según docente.
 
 
+Las fechas originales del correo son 23/10/2026 para A y 26/10/2026 para B. Esta revisión se prepara el 27/10/2026; no altera plazos ni presupone prórroga. Si aún falta aprobación, corresponde recuperar la Instancia A según el correo.
+Versionado
+GitHub Flow individual: rama por cambio coherente, commits convencionales, PR con autorrevisión y merge commit hacia main. Detalle en [GIT_WORKFLOW](docs/GIT_WORKFLOW.md). El historial existente no cumple la exigencia de SPEC original en primer commit ni la convención en todos los mensajes; se conserva y se solicita al docente cómo regularizarlo. No se inventa cumplimiento retroactivo.
+
+Ejecución futura
+Todavía no hay comandos de ejecución comprobados de una aplicación. En B este apartado se reemplazará por requisitos, variables sin secretos, comandos exactos de arranque/migración/seed, URLs, buzón local y datos de demostración. No generar fuentes, manifests ni lockfiles antes de la autorización docente.
+
+Fuentes y decisiones
+La consigna y SPEC oficial son la fuente del alcance obligatorio. Las plantillas orientan secciones y profundidad. JWT y verificación de correo se mantienen por requerimiento previo de la estudiante, no porque la SPEC oficial los imponga. La rúbrica previa de 100 puntos es únicamente autoevaluación opcional; no determina la aprobación docente.

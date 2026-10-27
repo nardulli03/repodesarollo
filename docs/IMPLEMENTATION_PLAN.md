@@ -1,166 +1,112 @@
-# Plan de implementación y verificación
 
-Versión 1.1. Este archivo es el roadmap de construcción del software; los roadmaps de aprendizaje son una función del producto descrita en SPEC.md.
+IMPLEMENTATION_PLAN — Cursos Abiertos
+Versión 2.0. Modalidad individual. Tareas planificadas, ninguna se marca implementada. La aprobación por correo con T1 es condición de inicio de B.
 
-## 1. Estrategia y estimación
+1. MVP P0 y fases
+P0 incluye HU-01..HU-12 del PRD: catálogo, ficha, registro/login/logout, recuperación, rate limit, aporte y CRUD propio, roadmap personal, revisión administrativa, progreso, verificación y consulta de aportes. Sin roadmaps públicos, worker, carga propia de videos ni categorías editables.
 
-Construir incrementos verticales que funcionen de extremo a extremo. Primero entorno y datos; luego identidad; después catálogo, administración, roadmaps y seguimiento. No empezar extras antes de terminar el alcance P0. La fase actual es documental y no incluye ejecutar este plan.
+DoD B: en máquina limpia, clonar, seguir README, docker compose up, acceder a frontend5173/API8000/Mailpit8025 y completar las historias P0 desde UI con PostgreSQL persistente; sin errores de consola que impidan los recorridos. README debe tener comandos exactos realmente verificados, migración, seed, variables, URLs y datos locales. No se presenta este objetivo como logrado.
 
-Estimación orientativa para una persona con conocimientos iniciales/intermedios del stack: 108–164 horas netas de trabajo. Agregar reserva del 20% para aprendizaje, fallos de integración y revisión docente: aproximadamente 130–197 horas. No es una fecha comprometida; calibrar después de la primera fase. La infraestructura de correo, seguridad y concurrencia explica parte del esfuerzo.
+A: corregir documentación, versionar, pedir revisión y esperar APROBADO/T1. B: construir funcionalidades y comprobarlas manualmente. Continuidad: pruebas automatizadas, Docker multi-stage, .dockerignore, no-root, caché y healthchecks avanzados en tickets de clase. No son precondición P0 de B.
 
-| Fase | Horas estimadas | Depende de | Entregable revisable |
-| --- | --- | --- | --- |
-| 0. Revisión documental | 4–6 | Consigna | Alcance y decisiones aprobadas para trabajo. |
-| 1. Entorno reproducible | 6–8 | Fase 0 | Frontend, API y PostgreSQL arrancan con Compose. |
-| 2. Modelo y migraciones | 8–12 | Fase 1 | Esquema inicial y datos de demostración. |
-| 3. Identidad JWT y límites | 18–28 | Fase 2 | Registro, login, CSRF, sesiones y cuotas. |
-| 4. Verificación, recuperación y correo | 18–26 | Fase 3 | Outbox, worker y restablecimiento probado. |
-| 5. Catálogo, CRUD propio y administrativo | 16–24 | Fases 2 y 3 | Consulta pública y administración real. |
-| 6. Roadmaps y progreso | 12–18 | Fase 5 | Publicación estable y seguimiento personal. |
-| 7. Integración UX y accesibilidad | 8–14 | Fases 4 a 6 | Recorridos y estados completos. |
-| 8. Verificación y entrega | 18–28 | Fase 7 | Evidencia, restauración y demo final. |
 
-Las horas incluyen pruebas de cada fase. La fase 8 integra y verifica el sistema completo; no posterga todos los tests hasta el final. Los responsables se asignan cuando se conozca el equipo. No se presupone trabajo de agentes ni incorporación de integrantes.
+2. Módulos y dependencias
+Dependencias indican prerrequisitos, no trabajo paralelo de integrantes. Una funcionalidad principal en curso.
 
-## 2. Fase 0 — Base documental
+3. Detalle por módulo
+A — Revisión documental
+A1: reemplazar documentos y conservar originales	Archivos/nombres/enlaces correctos; diff revisado.	1–2 h
+A2: revisión cruzada y PR	Historias/pantallas/API/tablas/tareas consistentes, sin placeholders de decisiones salvo versiones verificables y datos personales.	1–2 h
 
-Revisar supuestos del README y coherencia de SPEC, PRD, TRD, UX_UI, APPFLOW y BACKEND_SCHEMA. Revisar catálogo externo e inmutabilidad de roadmaps contra la rúbrica propuesta. CRUD de estudiantes autores, JWT y verificación de correo ya están confirmados por el usuario; no volver a tratarlos como pendientes. Registrar cambios mediante decisiones breves: contexto, alternativas, decisión y consecuencias.
+M0 — Base e infraestructura, después del T1
+0.1	Resolver versiones y estructura TRD	Versiones verificadas registradas; carpetas por dominio; manifests/locks del stack.	1 h
 
-Crear issues por historias HU-01 a HU-10 y tareas técnicas asociadas. Cada issue referencia RF/RN/RNF, aceptación y evidencia esperada. Configurar tablero simple con Pendiente, En curso, En revisión y Terminado; limitar a una funcionalidad principal en curso por persona.
+0.2	Compose y Dockerfiles mínimos	BD, migrate, API, UI, Mailpit levantan siguiendo README; API responde GET /health con 200 y confirma conexión en entorno local sin secretos.	2 h
 
-Cierre: las decisiones pendientes no impiden empezar; cualquier requisito docente que cambie el diseño queda identificado antes de construir su parte.
+0.3	Modelos y Alembic	Base vacía migra con tablas, FK, UNIQUE y CHECK del schema.	3 h
 
-## 3. Fase 1 — Repositorio y entorno
+0.4	Seeds idempotentes	Categorías y cursos con datos reales revisados; dos cuentas diferentes para autor/admin, claves desde entorno; repetir no duplica.	1 h
+GET /health es endpoint operativo público fuera de /api/v1; 200 vivo y BD disponible, 503 si BD inaccesible, sin datos de conexión. La versión definitiva y su contrato deben conservarse en BackendSchema.
 
-Preparar estructura de frontend/backend/infra/docs. Crear Vite con React 19 y TypeScript usando pnpm; proyecto FastAPI gestionado con uv. Fijar runtimes y generar lockfiles. Configurar lint, verificación de tipos, pruebas básicas y build en integración continua.
+M1 — Identidad, JWT y correo
+1.1	Registro y hashing	Cuenta student y roadmap vacío atómicos; email único, password no legible y rol del cliente rechazado.	2 h
 
-Definir Dockerfiles, redes, volumen PostgreSQL y servicio de migraciones. Configurar proxy de mismo origen. Documentar variables en .env.example, excluyendo valores reales. Incorporar healthchecks y endpoints live/ready. Verificar que ninguna variable VITE contenga secretos.
+1.2	Verificación/reenvío y UI	Email en Mailpit, confirmar una vez, pendiente no inicia sesión, reenviar invalida anterior.	3 h
 
-Cierre: una copia limpia se inicia siguiendo instrucciones y la API consulta PostgreSQL. Los procesos esperan migración exitosa. No basta con que el contenedor aparezca como iniciado.
+1.3	Login/me/logout, CSRF y guardas	Cookie JWT validada, acceso privado, logout revocado; falta CSRF/origen se rechaza.	3 h
 
-## 4. Fase 2 — Persistencia y restricciones
+1.4	Rate limit compartido	Cuota antes del hashing, 429/Retry-After; reinicio API conserva contador.	2 h
 
-Implementar modelos y schemas. Primera migración con PK, FK, CHECK y UNIQUE. Separar datos demo de migraciones y tarea de aprovisionamiento admin de registro público. Incorporar factories para pruebas con PostgreSQL real.
+1.5	Recuperación completa	Email local, cambio, token consumido, sesiones previas inválidas, contraseña anterior falla.	3 h
 
-Probar email normalizado único, progreso único, seguimiento único, pasos no repetidos, categorías restringidas y coherencia de fechas. Crear datos demo con curso compartido entre dos roadmaps para validar el cálculo posteriormente.
+M2 — Catálogo
+2.1	Listados y detalle API	Publicados únicamente; categorías paginadas; filtros/orden estables.	2 h
 
-Cierre: migrar una base vacía funciona; reejecutar carga demo no duplica registros; restaurar una base de pruebas preserva relaciones. Credenciales administrativas no quedan versionadas.
+2.2	UI catálogo/ficha/header	Búsqueda en URL, cards, ficha completa, estados y menú móvil funcional.	3 h
 
-## 5. Fase 3 — Autenticación, autorización y rate limit
+2.3	Tokens y adaptación base	Estilos mobile-first visibles y mejoras min-width; todos los listados conservan paginación.	2 h
 
-Construir CSRF y verificación de Origin; registro con respuesta genérica; hashing de contraseñas; login sin enumeración obvia; JWT firmado en cookie HttpOnly de 15 minutos, claims, registro revocable de jti, me y logout. Implementar dependencias de permisos y estado activo. Proteger rutas y limpiar caché privada al cambiar sesión.
+M3 — Aportes y validación
+3.1	CRUD de autor	Propietario desde JWT, metadatos completos y estados; ajeno404; URL duplicada409.	3 h
 
-Implementar contadores PostgreSQL en transacciones independientes y claves HMAC. Usar reloj de base para ventanas y pruebas con tiempo controlado. Diferenciar cuota pública por IP de supresión interna por email en registro/recuperación. Documentar comportamiento de ventanas y redes compartidas.
+3.2	Formularios y propios	Guardar/editar/enviar/archivar desde UI, declaración sí/no y estado/motivo visibles.	3 h
 
-Cierre: estudiante no accede a rutas administrativas y puede gestionar cursos propios después de verificar correo; rol enviado desde cliente se rechaza; no hay tokens en web storage; logout revoca; peticiones sin CSRF u origen válido se rechazan; el límite se conserva entre dos procesos de API y tras reinicio de uno.
+3.3	Revisión admin	Cola paginada, aprobar tras comprobar enlace, rechazar con motivo, auto-revisión403.	3 h
 
-## 6. Fase 4 — Recuperación y envío
+3.4	Edición publicada y conflictos	Sale del catálogo al volver a borrador; roadmap conserva referencia; versión vieja409.	1 h
 
-Implementar verificación inicial obligatoria de email, reenvío uniforme, token de 24 horas y bloqueo de login pendiente. Implementar también recuperación con solicitud uniforme, token criptográfico y hash de verificación. Outbox cifrada y worker con lease, reintento y expiración. Integrar SMTP local de prueba, configurar límites y preparar variables para proveedor real.
+M4 — Roadmap personal
+4.1	Agregar/quitar y privacidad	Solo publicados al agregar, sin duplicados, lista propia y límite100; usuarioB no accede a itemA.	2 h
 
-Construir pantalla de restablecimiento con token en fragmento y limpieza del historial. Implementar transacción de consumo, cambio de contraseña y revocación. Probar la interacción con un login concurrente para que no se cree una nueva sesión con un hash antiguo después del cambio.
+4.2	Reordenar y paginar	Mover posición global cambia orden persistente incluso entre páginas, sin huecos.	2 h
 
-Cierre: recuperar funciona de extremo a extremo; token usado y vencido fallan; un token consumido en dos peticiones simultáneas cambia contraseña como máximo una vez; sesiones anteriores fallan; correo retrasado tiene salida comprensible; no hay token legible en base, logs o almacenamiento web.
+4.3	Progreso y UI	Fracción/porcentaje y siguiente disponible correctos; quitar advierte que borra avance; no disponible bloquea actualización de estado.	3 h
 
-## 7. Fase 5 — Cursos y categorías
+M5 — Integración y entrega
+5.1	Recorrer aceptación P0	Matriz §5 completada con evidencia real y problemas registrados, no solo compilación.	3 h
 
-Construir listados públicos, filtros en URL y detalle. Implementar categorías y CRUD administrativo con estados, versionado y auditoría. Validar gratuidad y URLs al publicar; no hacer fetch del contenido externo desde API. Crear interfaz de borrador, edición, publicación y archivo.
+5.2	Instalación limpia y README	Persona sigue comandos exactos y completa flujo sin pasos implícitos; datos persisten al reiniciar.	2 h
 
-Probar los cuatro componentes del CRUD: alta, lectura, modificación y baja lógica. El archivo debe retirar recurso público sin borrar historial. Probar edición concurrente y categorías en uso.
+5.3	UX/seguridad/documentación	Teclado, contraste y 360/768/1440 revisados; API, UI y docs coinciden.	2 h
 
-Cierre: visitante consulta sin cuenta; catálogo nunca muestra borradores; estudiante verificado completa CRUD propio y recibe 404 al intentar modificar un curso ajeno; rutas administrativas devuelven 403; administrador completa CRUD desde UI; un fallo de red no aparece como vacío; se conserva búsqueda al volver.
+4. Ejecución y tablero
+Issues HU-01 a HU-12; cada uno incluye RF/RN/RNF, aceptación del PRD, subtareas de §3, dependencias, evidencia y rama/commit. Estados Pendiente/En curso/En revisión/Terminado; WIP1 por ser individual.
 
-## 8. Fase 6 — Roadmaps y aprendizaje
+A1-A2	A	[ ]	docs/modificaciones-consigna; correcciones preparadas, pendiente integrar/revisar.
+A3	A	[ ]	Pendiente PR/merge.
+0.1-0.4	M0	[ ]	
+1.1-1.5	M1	[ ]	—
+2.1-2.3	M2	[ ]	—
+3.1-3.4	M3	[ ]	—
+4.1-4.3	M4	[ ]	—
+5.1-5.3	M5	[ ]	—
 
-Implementar editor de pasos, publicación transaccional y consulta pública. Congelar metadata y composición después de publicar. Añadir archivado con acceso histórico para seguidores. Implementar PUT/DELETE de seguimiento y GET/PUT de progreso sin user_id en entrada.
+Cada tarea al ejecutarse se desglosa en su fila o issue y recibe rama/commit propios o lote coherente. No marcar módulo completo por haber terminado una sola subtarea. [x] solo tras evidencia.
 
-Calcular conteos y siguiente paso al consultar. Invalidar consultas de todos los roadmaps personales cuando cambia un curso. Implementar navegación desde panel al siguiente curso y finalización por conteo.
+5. Evidencia y estrategia de testing
+Aceptación funcional de B
+Historias	Requisitos/reglas	Evidencia esperada, todavía no producida
 
-Cierre: un curso compartido se refleja en varios roadmaps; abandonar conserva avance; doble seguimiento no duplica; roadmap vacío no se publica; orden con teclado funciona; carrera entre publicar y archivar no rompe el modelo.
+HU-01/02	RF-06/13, RN-01, RNF-02/03	Capturas o registro de catálogo/filtros/ficha y páginas; borrador no visible.
 
-## 9. Fase 7 — Revisión de experiencia
+HU-03/11	RF-01/02/03/12, RN-13, RNF-01	Registro→Mailpit→confirmación→JWT→logout; pending no emite acceso.
 
-Aplicar sistema visual Material claro y componentes consistentes. Revisar 360, 768 y 1440 px, zoom 200%, reflujo, formularios, mensajes y diálogos. Recorrer APPFLOW con datos reales y estados vacíos/error.
+HU-04	RF-04, RNF-01/07	Reset exitoso, token repetido inválido y sesión previa rechazada.
 
-Ejecutar tareas de usabilidad con compañeros sin explicar previamente dónde hacer clic. Registrar dificultades y corregir las que impiden completar P0. Verificar contraste, teclado y foco; no confiar solo en auditoría automática.
+HU-05	RF-05	429/Retry-After y conservación tras reinicio de API.
 
-Cierre: todos los flujos tienen éxito, alternativa y salida; ningún botón promete una función fuera del alcance; no se confunde seguir un roadmap con inscribirse en un proveedor.
+HU-06/07/12	RF-07/08/09, RN-02/04/07/08/10	Aporte completo, rechazo/corrección, ajeno404, archivo y edición publicada.
 
-## 10. Fase 8 — Integración, operación y presentación
+HU-08/10	RF-10/11, RN-03/05/09/11/12	Dos usuarios aislados, orden entre páginas, duplicado y progreso; no disponible con aviso.
 
-Ejecutar matriz de requisitos. Medir rendimiento con datos y entorno registrados; si falla, observar consultas e índices antes de escalar procesos. Revisar logs por secretos y comprobar headers/cookies en configuración HTTPS. Probar instalación desde copia limpia y backup/restauración.
+HU-09	RF-09, RN-01/06	Admin distinto valida y curso aparece; no auto-revisión; motivo al rechazar.
 
-Completar README operativo con requisitos, variables, arranque, migraciones, seeds, pruebas y problemas frecuentes. Revisar correspondencia documental con rutas y contratos reales. Preparar guion de presentación y limitaciones conocidas. No usar cuentas personales ni correos reales en la demo.
+Todas	RNF-04/05/06/09	Clon limpio, estructura por dominio, teclado/contraste y revisión de logs sin secretos.
 
-Cierre: CI pasa, demo completa, documentación actual y copia recuperable de datos. Cualquier criterio no alcanzado se comunica expresamente, sin presentarlo como cumplido.
+Evidencias con cuentas de demo; ocultar tokens/cookies/password. La validación humana de enlaces registra URL fuente.
 
-## 11. Matriz de verificación
 
-| Caso | Requisitos | Nivel | Resultado esperado |
-| --- | --- | --- | --- |
-| T-01 Registro válido y email duplicado | RF-01, RN-02 y RN-11 | Integración y E2E | Un usuario, mismo 202 genérico, cuenta existente intacta. |
-| T-02 Login correcto e incorrecto | RF-02, RNF-01 | Integración | Sesión solo con credenciales válidas; error uniforme. |
-| T-03 Caducidad, logout y cookie anterior | RF-03 | Integración y E2E | Petición posterior devuelve 401; UI limpia caché. |
-| T-04 Solicitud de recuperación existente/inexistente | RF-04 | Integración | Mismo contrato público; solo la existente encola correo. |
-| T-05 Reset usado, alterado, vencido y concurrente | RF-05, RNF-05 | Integración concurrente | Como máximo un cambio; sesiones revocadas. |
-| T-06 Límites entre procesos y borde de ventana | RF-06 | Integración | Cuota compartida, Retry-After correcto y respuesta genérica por email cuando aplica. |
-| T-07 Catálogo, filtros, paginación y cero resultados | RF-07 a RF-09 | Integración y E2E | Solo publicados; filtros combinados y URL restaurable. |
-| T-08 CRUD y roles | RF-10, RF-25, RN-03 | Integración y E2E | Autor modifica propios; ajenos 404; administración 403 para student; admin gestiona todos. |
-| T-09 Categoría en uso y nombre duplicado | RF-12 | Integración | 409 traducido; ninguna referencia rota. |
-| T-10 Versiones administrativas concurrentes | RNF-05 | Integración | Segunda escritura vieja recibe 409. |
-| T-11 Roadmap vacío, cursos duplicados/no publicados | RF-14 y RF-15 | Unitario e integración | Publicación rechazada; estado original intacto. |
-| T-12 Archivo de curso frente a publicación | RF-11, RN-08 | Integración concurrente | Una operación falla; ningún roadmap publicado queda con curso archivado. |
-| T-13 Inmutabilidad después de publicación | RF-16 | Integración | PATCH/PUT pasos rechaza cambio. |
-| T-14 Seguir, repetir y abandonar | RF-17 y RF-18 | Integración y E2E | Sin duplicados; conserva progreso. |
-| T-15 Compartir curso entre recorridos y reabrirlo | RF-19 a RF-21 | Unitario, integración y E2E | Conteos suben y bajan; siguiente paso correcto. |
-| T-16 Archivado con seguidor y visitante | RF-22 | Integración | Seguidor consulta; visitante 404; nuevas altas no admitidas. |
-| T-17 Alterar propietario o ID | RN-03, RNF-01 | Integración | user_id extra 422; no hay acceso ajeno. |
-| T-18 CSRF, Origin, next y URLs peligrosas | RNF-01, RN-13 | Integración y E2E | Rechazo de mutaciones y redirecciones no permitidas. |
-| T-19 Teclado, foco, contraste y reflujo | RNF-02 y RNF-03 | UI y manual | Flujos principales utilizables y mensajes perceptibles. |
-| T-20 Caída SMTP, lease y expiración | RF-04, RNF-08 | Integración | Reintenta sin token legible ni correos vencidos deliberados. |
-| T-21 Carga de catálogo y login | RNF-04 | Rendimiento | Reportar p95 contra metas y entorno reproducible. |
-| T-22 Instalación limpia y restauración | RNF-06 y RNF-09 | Operación | Arranque y recuperación con evidencia y tiempos. |
-| T-23 Revisar logs y payloads | RNF-08 | Integración y revisión | Sin contraseñas, tokens, cookies ni datos de más. |
 
-No fijar cobertura porcentual como sustituto de casos críticos. Las pruebas concurrentes deben coordinar transacciones para provocar la carrera de forma repetible; repetir una petición rápidamente sin sincronización no demuestra ausencia de carrera.
 
-## 12. Definición de listo y terminado
 
-Una tarea está lista para iniciar cuando tiene objetivo, referencias documentales, dependencias conocidas y aceptación comprobable. Está terminada cuando código y documentación coinciden, se revisan permisos/validación, pasan pruebas relevantes, la UI cubre carga/error/vacío cuando aplica y el resultado puede demostrarse.
 
-Para PRs, incluir problema concreto, comportamiento resultante, validación ejecutada y migraciones si las hay. Mantener cambios acotados por caso de uso. No mezclar secretos ni datos personales en fixtures o ejemplos. No marcar una tarea terminada por compilar si todavía falla el recorrido del usuario.
-
-## 13. Riesgos y medidas
-
-| Riesgo | Probabilidad/impacto estimados | Medida y respuesta |
-| --- | --- | --- |
-| Falta de familiaridad con uv, sesiones o migraciones | Media/alto | Incremento mínimo temprano y tiempo de aprendizaje en reserva. |
-| SMTP no disponible | Media/alto para recuperación | Capturador local para pruebas y proveedor preparado antes de demo pública. |
-| Stack crece por extras | Alta/alto | Congelar P0; cada extra exige impacto y nueva estimación. |
-| Seguridad agregada al final | Media/alto | Construir CSRF, sesiones, permisos y cuotas antes del CRUD. |
-| Inconsistencia entre documentos | Media/medio | Revisar trazabilidad en cada cambio de contrato. |
-| Enlaces externos dejan de ser gratuitos | Media/medio | Revisión editorial y reconocer limitación de sustitución en roadmaps publicados. |
-| Locks y límites degradan rendimiento | Media/medio | Medir pool, transacciones e índices; no esconder fallos con reintentos infinitos. |
-| Base se pierde al recrear contenedores | Media/alto | Volumen persistente y restauración probada; documentar comandos destructivos por separado. |
-
-## 14. Guion de demostración
-
-1. Buscar un curso público y abrir su detalle.
-2. Crear estudiante, verificar correo desde SMTP de pruebas, iniciar sesión con JWT y consultar perfil.
-3. Seguir un roadmap y completar un curso que aparezca en otro recorrido.
-4. Ver cambios de avance y siguiente paso; abandonar un seguimiento sin perder progreso.
-5. Recuperar contraseña por SMTP de pruebas y demostrar revocación de una sesión previa.
-6. Ingresar como administrador, crear curso, guardar borrador, publicar, editar y archivar un curso sin dependencias.
-7. Crear y publicar un roadmap; mostrar rechazo a editar sus pasos y a archivar un curso que usa.
-8. Demostrar CRUD propio de estudiante, 404 al intentar editar un curso ajeno, 403 en administración y 429 controlado.
-9. Presentar arranque limpio, matriz de pruebas y limitaciones conocidas.
-
-## 15. Mejoras posteriores
-
-MFA administrativo; nuevas versiones de roadmaps; sustitución de cursos discontinuados; exportación de progreso; etiquetas múltiples; favoritos; búsqueda con ranking; limitador especializado si crece la escala. Cada mejora necesita requisitos propios, actualización del modelo y pruebas; no se considera incluida implícitamente en el MVP.
-
-## 16. Pruebas y evaluación incorporadas en revisión 1.1
-
-Agregar T-24 (RF-23 y RF-24): registro encola verificación, confirmación única, reenvío invalida anterior, expiración de 24 horas y GET sin efecto. T-25: contraseña correcta con email pendiente no emite JWT; reset no omite esta condición. T-26: JWT alterado, sin firma, algoritmo no permitido, issuer/audience incorrectos, expirado y jti revocado se rechazan. T-27 (RF-25): dos autores con cursos propios no pueden leer borradores ni escribir recursos del otro por ID, payload o cambios de URL; admin conserva alcance global.
-
-Actualizar datos demo y CI para verificar autenticación, titularidad y correo. La revisión de entrega usa docs/RUBRICA.md, que suma 100 puntos y distingue evidencia documental de funciones implementadas. La estimación se incrementó por estos requisitos confirmados; no se fija fecha de entrega sin información del usuario.
