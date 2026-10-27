@@ -129,3 +129,15 @@ Consumo concurrente o reordenación	Media/alto	Bloqueos y restricciones; integra
 
 9. Testing previsto
 En B: verificaciones funcionales end-to-end manuales y clon limpio. En clase: pytest para funciones puras y PostgreSQL real para permisos, constraints/transacciones; Vitest para estados de UI. No usar SQLite como evidencia de bloqueos PostgreSQL. Detalle y cobertura objetivo en IMPLEMENTATION_PLAN. No se afirma haber ejecutado tests.
+
+## Versiones verificadas durante T2
+
+- Python: 3.14.6.
+- uv: 0.12.1.
+- FastAPI: 0.162.0.
+- Uvicorn: 0.54.0.
+
+Dependencias resueltas en backend/uv.lock.
+En el scaffold, GET /health verifica que la API responde.
+GET /api/v1/courses devuelve un catálogo vacío paginado.
+La conexión y las consultas a PostgreSQL todavía no están implementadas.

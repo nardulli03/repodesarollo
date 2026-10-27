@@ -13,7 +13,21 @@ El ticket docente del 27/10/2026 habilita el desarrollo
 del scaffold mínimo.
 
 - T1: estructura y configuración inicial en preparación.
-- T2: backend mínimo pendiente.
+- T2: backend mínimo. ### Backend local — T2
+Requiere uv y Python compatibles con backend/pyproject.toml.
+Desde la raíz del repositorio:
+```powershell
+cd backend
+uv sync --locked
+uv run uvicorn app.main:app --reload --port 8000
+```
+- Estado: http://localhost:8000/health
+- Cursos: http://localhost:8000/api/v1/courses
+- Documentación API: http://localhost:8000/docs
+
+El listado devuelve datos vacíos; todavía no consulta PostgreSQL.
+Frontend y Docker Compose continúan pendientes.
+
 - T3: frontend mínimo pendiente.
 - T4: Docker Compose de desarrollo pendiente.
 - T5: release v0.1.0 pendiente.
