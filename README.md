@@ -28,7 +28,23 @@ uv run uvicorn app.main:app --reload --port 8000
 El listado devuelve datos vacíos; todavía no consulta PostgreSQL.
 Frontend y Docker Compose continúan pendientes.
 
-- T3: frontend mínimo pendiente.
+- T3: ### Frontend local — T3
+
+Mantener el backend ejecutándose en el puerto 8000.
+
+En otra terminal, desde la raíz del repositorio:
+
+```powershell
+cd frontend
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Abrir http://localhost:5173.
+
+El frontend consulta /api/v1/courses mediante el proxy de Vite.
+Con el catálogo actual se muestra una lista vacía.
+
 - T4: Docker Compose de desarrollo pendiente.
 - T5: release v0.1.0 pendiente.
 

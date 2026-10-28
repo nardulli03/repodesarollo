@@ -141,3 +141,15 @@ Dependencias resueltas en backend/uv.lock.
 En el scaffold, GET /health verifica que la API responde.
 GET /api/v1/courses devuelve un catálogo vacío paginado.
 La conexión y las consultas a PostgreSQL todavía no están implementadas.
+
+## Versiones verificadas durante T3
+- Node.js: 24.16.0.
+- pnpm: 11.13.0.
+- React: 19.3.1.
+- React DOM: 19.3.1.
+- Vite: 8.3.5.
+
+Dependencias resueltas en frontend/pnpm-lock.yaml.
+Verificaciones realizadas:
+- pnpm lint: sin errores.
+- pnpm build: compilación correcta.
