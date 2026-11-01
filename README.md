@@ -1,38 +1,172 @@
-Cursos Abiertos
+# Cursos Abiertos
 
 ## Cómo levantar
 
-Scaffold en construcción. Las instrucciones de ejecución
-se completarán y verificarán en el ticket T4.
+Requisitos:
 
-Todavía no están implementados el backend, el frontend
-ni Docker Compose.
+- Git.
+- Docker Desktop iniciado con contenedores Linux.
+- Docker Compose.
+- Puertos 5432, 8000 y 5173 disponibles.
 
-## Estado del desarrollo
-El ticket docente del 27/10/2026 habilita el desarrollo
+Desde PowerShell:
+
+```powershell
+git clone https://github.com/nardulli03/repodesarollo.git
+cd repodesarollo
+git switch dev
+Copy-Item .env.example .env
+docker compose up --build
+```
+
+Estas instrucciones corresponden al scaffold integrado en dev
+después del merge del ticket T4. El release v0.1.0 todavía está pendiente.
+
+La primera ejecución descarga las imágenes e instala las dependencias.
+Mantener la terminal abierta mientras se utilizan los servicios.
+
+Si el repositorio ya está clonado, no repetir el clone.
+Si .env ya existe, revisar su configuración antes de reemplazarlo.
+
+### Accesos
+
+| Servicio | Dirección |
+| --- | --- |
+| Frontend | http://localhost:5173 |
+| Estado del backend | http://localhost:8000/health |
+| Documentación de la API | http://localhost:8000/docs |
+| Listado de cursos | http://localhost:8000/api/v1/courses |
+| PostgreSQL desde la computadora | localhost:5432 |
+
+El frontend debe mostrar “Todavía no hay cursos publicados”.
+El endpoint de cursos devuelve una colección vacía con formato paginado.
+
+### Verificación
+
+En otra terminal, desde la raíz del repositorio:
+
+```powershell
+docker compose ps
+Invoke-RestMethod http://localhost:8000/health
+```
+
+Los servicios postgres, backend y frontend deben aparecer en estado Up.
+
+GET /health debe devolver:
+
+```json
+{"status":"ok"}
+```
+
+Este endpoint confirma que la API responde; todavía no verifica
+la conexión con PostgreSQL.
+
+### Detener los servicios
+
+Desde otra terminal ubicada en la raíz:
+
+```powershell
+docker compose down
+```
+
+El volumen de PostgreSQL se conserva. No agregar -v si se quieren
+mantener sus datos.
+
+### Aplicar cambios de código
+
+En este scaffold no se configuraron volúmenes para sincronizar
+el código local con los contenedores. Después de modificar archivos:
+
+```powershell
+docker compose up --build
+```
+
+## Descripción del producto
+
+Cursos Abiertos es una webapp de comunidad de cursos gratuitos.
+Los usuarios aportan recursos de distintas plataformas y declaran
+si los tomaron. Un administrador valida los aportes antes de
+incorporarlos al catálogo comunitario.
+
+Cada usuario organiza su aprendizaje en un roadmap personal y privado.
+
+- Materia: Desarrollo de Software, sección S34.
+- Institución: UTN Facultad Regional La Plata.
+- Ciclo lectivo: 2026.
+- Modalidad: individual.
+- Repositorio: https://github.com/nardulli03/repodesarollo
+
+## Estado actual
+
+El ticket docente del 27/10/2026 habilitó el desarrollo
 del scaffold mínimo.
 
-- T1: estructura y configuración inicial en preparación.
-- T2: backend mínimo. ### Backend local — T2
-Requiere uv y Python compatibles con backend/pyproject.toml.
+| Ticket | Estado |
+| --- | --- |
+| T1: estructura y configuración inicial | Integrado en dev |
+| T2: backend mínimo | Integrado en dev |
+| T3: frontend mínimo | Integrado en dev |
+| T4: Docker Compose de desarrollo | Verificado localmente; pendiente de integración |
+| T5: release v0.1.0 | Pendiente |
+
+Verificaciones realizadas durante el desarrollo:
+
+- Backend local con GET /health y GET /api/v1/courses.
+- Frontend conectado al endpoint de cursos.
+- Estados de carga, error y catálogo vacío.
+- pnpm lint sin errores y pnpm build correcto durante T3.
+- Tres servicios Docker en estado Up.
+- GET /health respondió {"status":"ok"} dentro del entorno Docker.
+- Frontend accesible desde http://localhost:5173.
+
+### Límites del scaffold
+
+El catálogo todavía devuelve datos vacíos.
+PostgreSQL está ejecutándose y DATABASE_URL está configurada,
+pero el backend no realiza consultas a la base.
+
+Todavía no están implementados:
+
+- Registro, login con JWT y verificación de correo.
+- Recuperación de contraseña y rate limit.
+- CRUD de cursos y validación de aportes.
+- Roadmap personal y progreso.
+
+Estas funcionalidades pertenecen al desarrollo posterior del MVP.
+No se presenta el scaffold como la aplicación completa.
+
+Los Dockerfiles son simples, sin multi-stage ni healthchecks.
+Las pruebas automatizadas y mejoras de imágenes quedan para
+los tickets correspondientes.
+
+## Stack
+
+- Frontend: React 19, Vite y pnpm.
+- Backend: FastAPI, uv y Uvicorn.
+- Base de datos: PostgreSQL 18.6.
+- Infraestructura de desarrollo: Docker y Docker Compose.
+
+Las versiones verificadas y decisiones técnicas se registran
+en [TRD.md](docs/TRD.md).
+
+## Desarrollo local sin Docker
+
+Esta alternativa requiere Python, uv, Node.js y pnpm.
+Las versiones utilizadas se encuentran en el TRD.
+
+### Backend
+
 Desde la raíz del repositorio:
+
 ```powershell
 cd backend
 uv sync --locked
 uv run uvicorn app.main:app --reload --port 8000
 ```
-- Estado: http://localhost:8000/health
-- Cursos: http://localhost:8000/api/v1/courses
-- Documentación API: http://localhost:8000/docs
 
-El listado devuelve datos vacíos; todavía no consulta PostgreSQL.
-Frontend y Docker Compose continúan pendientes.
+### Frontend
 
-- T3: ### Frontend local — T3
-
-Mantener el backend ejecutándose en el puerto 8000.
-
-En otra terminal, desde la raíz del repositorio:
+En otra terminal, desde la raíz:
 
 ```powershell
 cd frontend
@@ -40,61 +174,51 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abrir http://localhost:5173.
+El proxy de Vite utiliza http://127.0.0.1:8000 por defecto.
+En Docker, BACKEND_INTERNAL_URL lo dirige a http://backend:8000.
 
-El frontend consulta /api/v1/courses mediante el proxy de Vite.
-Con el catálogo actual se muestra una lista vacía.
+Detener los servidores locales antes de iniciar Compose
+si utilizan los mismos puertos.
 
-- T4: Docker Compose de desarrollo pendiente.
-- T5: release v0.1.0 pendiente.
+## Configuración y dependencias
 
-## Flujo de trabajo vigente
-Las ramas de trabajo nacen desde dev y se integran en dev.
-main recibe únicamente releases desde dev, con CHANGELOG
-actualizado y tag vX.Y.Z.
+- .env.example contiene valores de ejemplo para desarrollo.
+- .env contiene la configuración local y no se versiona.
+- Las credenciales de ejemplo no deben utilizarse en producción.
+- backend/uv.lock y frontend/pnpm-lock.yaml se versionan.
+- .venv, node_modules, dist y las cachés de Python no se versionan.
+
+## Documentación
+
+| Documento | Contenido |
+| --- | --- |
+| [SPEC](docs/SPEC.md) | Alcance, origen y decisiones del producto |
+| [PRD](docs/PRD.md) | Personas, historias, requisitos y aceptación |
+| [TRD](docs/TRD.md) | Arquitectura, stack y decisiones técnicas |
+| [UX-UI](docs/UX-UI.md) | Tokens, componentes, estados y adaptación |
+| [APPFlow](docs/APPFlow.md) | Pantallas, navegación y relación con API |
+| [BackendSchema](docs/BackendSchema.md) | Modelo de datos y contratos previstos |
+| [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) | Tareas, dependencias y evidencia |
+| [Git Workflow](docs/GIT_WORKFLOW.md) | Ramas, commits, revisión y releases |
+| [Autoevaluación](docs/RUBRICA.md) | Apoyo complementario; no es rúbrica oficial |
+| [SPEC oficial](docs/referencias/SPEC.md) | Especificación recibida sin modificaciones |
+| [Borrador del aula](docs/referencias/SPEC-borrador-clase-2026-10-20.md) | Antecedente de la especificación |
+
+Los documentos describen el producto objetivo.
+El apartado “Estado actual” identifica lo efectivamente implementado.
+Los criterios futuros no se presentan como pruebas ejecutadas.
+
+## Flujo de trabajo
+
+Desde los tickets del 27/10/2026:
+
+1. Las ramas de trabajo nacen desde dev.
+2. Cada ticket se integra mediante pull request hacia dev.
+3. main recibe releases desde dev, con CHANGELOG actualizado
+   y tag anotado vX.Y.Z.
+
+Se utilizan commits convencionales y autorrevisión por tratarse
+de un trabajo individual.
 
 Detalle en [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
-
-Webapp de comunidad de cursos gratuitos: los usuarios aportan recursos de distintas plataformas; después de una revisión, los cursos integran el catálogo comunitario y cada persona organiza su roadmap privado.
-
-Materia: Desarrollo de Software, sección S34, UTN FR La Plata, 2026. Modalidad: individual.
-Repositorio: https://github.com/nardulli03/repodesarollo
-Estado: Instancia A en corrección documental. Sin aprobación docente ni T1 registrados en esta documentación. No se afirma implementación ni ejecución de pruebas.
-Rama de correcciones creada: docs/modificaciones-consigna. 
-
-Qué hace
-Permite consultar el catálogo sin cuenta, registrarse, verificar correo e iniciar sesión con JWT. Un usuario verificado aporta cursos, declara si los tomó y consulta sus estados de revisión. Un administrador valida o rechaza aportes. Cada usuario gestiona un roadmap personal: agrega cursos publicados, los ordena, los quita y registra avance. Incluye recuperación de contraseña y rate limit de login.
-
-Stack
-React 19 + Vite + pnpm; FastAPI + uv; PostgreSQL 18.6 exigido por la SPEC; Docker y Docker Compose en desarrollo. Las versiones exactas resueltas y comprobadas se registrarán en [TRD](docs/TRD.md). No se declaran instalaciones que no se realizaron.
-
-Documentación
-[SPEC](docs/SPEC.md)	Refinamiento, alcance, origen y decisiones.
-[PRD](docs/PRD.md)	Personas, historias, aceptación, requisitos y reglas.
-[TRD](docs/TRD.md)	Arquitectura, stack, seguridad y decisiones técnicas.
-[UX-UI](docs/UX-UI.md)	Tokens, componentes, estados y adaptación.
-[APPFlow](docs/APPFlow.md)	Pantallas, navegación y relación con API.
-[BackendSchema](docs/BackendSchema.md)	Datos, relaciones, estados y contratos.
-[IMPLEMENTATION_PLAN](docs/IMPLEMENTATION_PLAN.md)	Módulos, tareas, dependencias y evidencia.
-[GIT_WORKFLOW](docs/GIT_WORKFLOW.md)	Ramas, revisión, merge y commits.
-[SPEC oficial recibida](docs/referencias/SPEC.md)	Copia sin modificaciones del adjunto del 21/10.
-[Borrador del aula](docs/referencias/SPEC-borrador-clase-2026-10-20.md)	Antecedente sin modificaciones; no reemplaza la SPEC oficial.
-
-Cómo revisar
-Leer SPEC → PRD → TRD → UX-UI → APPFlow → BackendSchema → plan. GitHub renderiza Markdown y Mermaid. Comprobar que pantallas, endpoints, requisitos e historias coincidan. La checklist oficial no fue incluida entre los adjuntos disponibles: la revisión por plantillas no se presenta como checklist oficial completada.
-Estado de las instancias
-Instancia	Estado documentado	Condición de cierre
-A: documentación	Correcciones preparadas; pendiente subir y solicitar revisión	Aprobación explícita del repo entero y recepción del T1.
-B: MVP	Pendiente de aprobación y T1	Clon limpio, seguir README y docker compose up; historias P0 operativas desde UI.
-Continuidad del 27/10	Planificada; no se afirma realizada	Tickets de pruebas y mejoras Docker según docente.
-
-
-Las fechas originales del correo son 23/10/2026 para A y 26/10/2026 para B. Esta revisión se prepara el 27/10/2026; no altera plazos ni presupone prórroga. Si aún falta aprobación, corresponde recuperar la Instancia A según el correo.
-Versionado
-GitHub Flow individual: rama por cambio coherente, commits convencionales, PR con autorrevisión y merge commit hacia main. Detalle en [GIT_WORKFLOW](docs/GIT_WORKFLOW.md). El historial existente no cumple la exigencia de SPEC original en primer commit ni la convención en todos los mensajes; se conserva y se solicita al docente cómo regularizarlo. No se inventa cumplimiento retroactivo.
-
-Ejecución futura
-Todavía no hay comandos de ejecución comprobados de una aplicación. En B este apartado se reemplazará por requisitos, variables sin secretos, comandos exactos de arranque/migración/seed, URLs, buzón local y datos de demostración. No generar fuentes, manifests ni lockfiles antes de la autorización docente.
-
-Fuentes y decisiones
-La consigna y SPEC oficial son la fuente del alcance obligatorio. Las plantillas orientan secciones y profundidad. JWT y verificación de correo se mantienen por requerimiento previo de la estudiante, no porque la SPEC oficial los imponga. La rúbrica previa de 100 puntos es únicamente autoevaluación opcional; no determina la aprobación docente.
+El historial previo se conserva; no se afirma cumplimiento retroactivo.
