@@ -72,7 +72,7 @@ M5 — Integración y entrega
 4. Ejecución y tablero
 Issues HU-01 a HU-12; cada uno incluye RF/RN/RNF, aceptación del PRD, subtareas de §3, dependencias, evidencia y rama/commit. Estados Pendiente/En curso/En revisión/Terminado; WIP1 por ser individual.
 
-A1-A2	A	[ ]	docs/modificaciones-consigna; correcciones preparadas, pendiente integrar/revisar.
+A1-A2	A	[]	docs/modificaciones-consigna; correcciones preparadas, pendiente integrar/revisar.
 A3	A	[ ]	Pendiente PR/merge.
 0.1-0.4	M0	[ ]	
 1.1-1.5	M1	[ ]	—
@@ -106,7 +106,33 @@ Todas	RNF-04/05/06/09	Clon limpio, estructura por dominio, teclado/contraste y r
 Evidencias con cuentas de demo; ocultar tokens/cookies/password. La validación humana de enlaces registra URL fuente.
 
 
+## Seguimiento del scaffold — T1 a T5
 
+| Ticket | Estado | Evidencia |
+| --- | --- | --- |
+| T1: estructura y configuración | [x] | PR #2, merge 1154ffa |
+| T2: backend mínimo | [x] | PR #3, merge 97e0e5a |
+| T3: frontend mínimo | [x] | PR #4, merge 26e1cc4 |
+| T4: Docker Compose | [x] | PR #6, merge fcf87cc; completa los archivos omitidos en PR #5 |
+| T5: documentación y verificación del release | [x] | Clon limpio de dev verificado antes de publicar |
+| T5: integración en main y tag v0.1.0 | [ ] | Pendiente de publicación |
+
+### Verificación del clon limpio
+Se clonó dev en una carpeta independiente y se creó .env
+desde .env.example.
+
+Comando de arranque:
+    docker compose -p cursos-verificacion-v010 up -d --build
+
+Resultados:
+- PostgreSQL, backend y frontend en estado Up.
+- GET /health respondió {"status":"ok"}.
+- Frontend accesible en http://localhost:5173.
+- La pantalla mostró el catálogo vacío.
+
+Esta comprobación valida el scaffold.
+No acredita el CRUD, autenticación ni consultas a PostgreSQL,
+que todavía no están implementados.
 
 
 
