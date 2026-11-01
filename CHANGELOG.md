@@ -1,8 +1,14 @@
+
+
 # Changelog
 
 Los cambios relevantes del proyecto se registran en este archivo.
 
 ## [Unreleased]
+
+## [v0.1.0] - 2026-10-31
+
+### Added
 
 ### Added
 - Estructura inicial de backend y frontend organizada por dominios.

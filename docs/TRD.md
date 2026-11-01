@@ -316,3 +316,10 @@ El release no se antedata al 27/10: usar fecha efectiva de publicación. No marc
 ### 9.3 Estrategia posterior
 
 pytest/AAA para reglas puras; PostgreSQL real para constraints, permisos y concurrencia; Vitest para estados/hooks. SQLite no acredita comportamiento de bloqueos PostgreSQL. Objetivos y casos se desarrollan en [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md). No se implementan tests, multi-stage ni healthchecks por adelantado como condición para aprobar el scaffold.
+
+## Actualización de cierre del scaffold
+
+T4 quedó integrado en dev mediante el PR #6, merge fcf87cc.
+Se verificó el arranque desde un clon limpio de dev: los tres contenedores quedaron Up, /health respondió ok y el frontend mostró el catálogo vacío.
+La integración en main y el tag v0.1.0 quedan pendientes
+hasta ejecutar la publicación del release.
