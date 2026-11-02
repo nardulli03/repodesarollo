@@ -134,5 +134,19 @@ Esta comprobación valida el scaffold.
 No acredita el CRUD, autenticación ni consultas a PostgreSQL,
 que todavía no están implementados.
 
+## Tickets de clase — T1: reglas de cursos
+
+- Estado: [x] Implementado y verificado localmente.
+- Rama: feat/T1-tests-reglas-cursos.
+- Implementación: backend/app/cursos/rules.py.
+- Tests: backend/tests/test_cursos_unit.py.
+- Resultado: 153 passed, sin fallos ni casos omitidos.
+- Cobertura del módulo de reglas: 97 %, incluyendo ramas.
+- Commit y merge: pendientes de registrar al integrar el PR.
+
+Se verifican campos obligatorios, longitudes, URL y duplicados,
+año, duración, idioma, nivel, docentes, indicadores, certificado,
+aval y transiciones de estado.
+
 
 
