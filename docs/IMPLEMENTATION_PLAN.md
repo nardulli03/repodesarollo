@@ -155,5 +155,17 @@ aval y transiciones de estado.
 - Verificación conjunta con cursos: 188 pruebas aprobadas.
 - Cobertura con ramas: roadmap 100%, cursos 97%, total combinado 98%.
 
+### Evidencia de T3 — Validación y permisos de aportes
+- Implementación: backend/app/aportes/rules.py.
+- Pruebas: backend/tests/test_aportes_unit.py.
+- Primera ejecución: 33 fallos por implementación pendiente.
+- Después de implementar: 33 pruebas aprobadas.
+- Verificación conjunta de cursos, roadmap y aportes: 221 pruebas aprobadas.
+- Cobertura con ramas: aportes 100%, roadmap 100%, cursos 97%;
+  total combinado 98%.
+- Se utilizan códigos de error estables para desacoplar las pruebas
+  de los mensajes de la interfaz.
+- Esta evidencia corresponde a funciones puras; no acredita todavía
+  autenticación HTTP, persistencia ni el flujo integrado de aprobación.
 
 
