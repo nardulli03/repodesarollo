@@ -39,6 +39,10 @@ Los cambios relevantes del proyecto se registran en este archivo.
   todavía no se cumple.
 - Archivos .dockerignore para backend y frontend que excluyen entornos
   locales, cachés, pruebas, reportes, variables de entorno y logs.
+- Configuración de Nginx con fallback SPA, proxy /api, headers de
+  seguridad, healthcheck HTTP y caché para assets con hash.
+
+
 
 ## [v0.1.0] - 2026-10-31
 
@@ -62,3 +66,5 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - El catálogo consulta PostgreSQL y muestra únicamente cursos publicados,
 con paginación, búsqueda y filtro por categoría.
 - El catálogo utiliza useCursos y permite reintentar sin recargar la página.
+- Frontend compilado con Node 24 y servido desde Nginx Alpine Slim.
+- Compose conserva localhost:5173 y lo conecta al puerto 80 de Nginx.
