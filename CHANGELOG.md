@@ -37,7 +37,8 @@ Los cambios relevantes del proyecto se registran en este archivo.
   de desarrollo, ejecución como appuser y healthcheck HTTP.
 - Imagen verificada: 273.969.071 bytes. El objetivo de menos de 100 MB
   todavía no se cumple.
-
+- Archivos .dockerignore para backend y frontend que excluyen entornos
+  locales, cachés, pruebas, reportes, variables de entorno y logs.
 
 ## [v0.1.0] - 2026-10-31
 

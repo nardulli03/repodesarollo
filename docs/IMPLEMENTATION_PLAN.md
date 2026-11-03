@@ -217,3 +217,13 @@ aval y transiciones de estado.
 - Estado: parcial. No cumple todavía el objetivo de menos de 100 MB.
 - La capa Debian y el entorno virtual suman aproximadamente 163,1 MB;
   limpiar el contexto de construcción no basta para alcanzar el límite.
+
+  ### Evidencia de T8 — Dockerignore
+
+- Rama: feat/T8-dockerignore.
+- Agregados backend/.dockerignore y frontend/.dockerignore.
+- Imágenes reconstruidas con --no-cache --progress=plain.
+- Backend: 0 carpetas __pycache__ dentro de /app/app.
+- Frontend: useCursos.test.js ausente de la imagen.
+- Se conservan los archivos necesarios para instalar dependencias
+  y construir la aplicación.

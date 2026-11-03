@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Dependencias locales, compilados y cachés
+node_modules
+**/node_modules
+dist
+coverage
+.vitest
+**/.vite
+
+# Pruebas de frontend
+**/*.test.js
+**/*.test.jsx
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.js
+**/*.spec.jsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Configuración local y logs
+.env
+.env.*
+**/.env
+**/.env.*
+*.log
+**/*.log
