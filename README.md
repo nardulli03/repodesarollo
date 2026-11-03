@@ -222,15 +222,3 @@ de un trabajo individual.
 
 Detalle en [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
 El historial previo se conserva; no se afirma cumplimiento retroactivo.
-
-## Tests unitarios de cursos
-Desde la raíz:
-
-```powershell
-cd backend
-uv sync --locked
-uv run python -m pytest tests/test_cursos_unit.py -q --cov=app.cursos.rules --cov-branch --cov-report=term-missing
-```
-
-Resultado verificado: 153 tests aprobados y 97 % de cobertura
-del módulo app.cursos.rules, incluyendo ramas.

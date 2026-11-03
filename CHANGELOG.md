@@ -5,18 +5,7 @@
 Los cambios relevantes del proyecto se registran en este archivo.
 
 ## [Unreleased]
-- Reglas puras de validación y transiciones de cursos.
-- 153 casos unitarios con pytest y patrón AAA.
-- pytest y pytest-cov como dependencias de desarrollo.
-- Reglas de roadmap para agregar cursos publicados, evitar duplicados,
-  limitar a 100 cursos, reordenar y quitar cursos conservando el progreso
-  de los restantes.
-- 35 pruebas unitarias de roadmap, con cobertura de líneas y ramas del 100%.
-- Reglas de revisión de aportes: administrador obligatorio, prohibición
-  de auto-revisión, estado en revisión, motivo de rechazo y confirmación
-  del enlace para aprobar.
-- 33 pruebas unitarias de revisión de aportes, con cobertura de líneas
-  y ramas del 100%.
+
 ## [v0.1.0] - 2026-10-31
 
 ### Added

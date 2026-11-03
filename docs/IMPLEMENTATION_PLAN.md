@@ -134,38 +134,5 @@ Esta comprobación valida el scaffold.
 No acredita el CRUD, autenticación ni consultas a PostgreSQL,
 que todavía no están implementados.
 
-## Tickets de clase — T1: reglas de cursos
-- Estado: [x] Implementado y verificado localmente.
-- Rama: feat/T1-tests-reglas-cursos.
-- Implementación: backend/app/cursos/rules.py.
-- Tests: backend/tests/test_cursos_unit.py.
-- Resultado: 153 passed, sin fallos ni casos omitidos.
-- Cobertura del módulo de reglas: 97 %, incluyendo ramas.
-- Commit y merge: pendientes de registrar al integrar el PR.
-
-Se verifican campos obligatorios, longitudes, URL y duplicados,
-año, duración, idioma, nivel, docentes, indicadores, certificado,
-aval y transiciones de estado.
-
-### Evidencia de T2 — Reglas de roadmap
-- Implementación: backend/app/roadmap/rules.py.
-- Pruebas: backend/tests/test_roadmap_unit.py.
-- Primera ejecución: 35 fallos por funciones pendientes de implementación.
-- Después de implementar: 35 pruebas aprobadas.
-- Verificación conjunta con cursos: 188 pruebas aprobadas.
-- Cobertura con ramas: roadmap 100%, cursos 97%, total combinado 98%.
-
-### Evidencia de T3 — Validación y permisos de aportes
-- Implementación: backend/app/aportes/rules.py.
-- Pruebas: backend/tests/test_aportes_unit.py.
-- Primera ejecución: 33 fallos por implementación pendiente.
-- Después de implementar: 33 pruebas aprobadas.
-- Verificación conjunta de cursos, roadmap y aportes: 221 pruebas aprobadas.
-- Cobertura con ramas: aportes 100%, roadmap 100%, cursos 97%;
-  total combinado 98%.
-- Se utilizan códigos de error estables para desacoplar las pruebas
-  de los mensajes de la interfaz.
-- Esta evidencia corresponde a funciones puras; no acredita todavía
-  autenticación HTTP, persistencia ni el flujo integrado de aprobación.
 
 
