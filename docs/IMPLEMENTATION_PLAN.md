@@ -227,3 +227,20 @@ aval y transiciones de estado.
 - Frontend: useCursos.test.js ausente de la imagen.
 - Se conservan los archivos necesarios para instalar dependencias
   y construir la aplicación.
+
+### Evidencia de T9 — Frontend con Nginx
+- Rama: feat/T9-frontend-nginx.
+- Builder: node:24-alpine; runtime: nginx:1.30.6-alpine-slim.
+- Se conserva Node 24 por compatibilidad con las herramientas actuales.
+- Construcción y nginx -t correctos.
+- Tamaño local: 20.896.193 bytes, aproximadamente 20,90 MB;
+  cumple el objetivo de menos de 30 MB.
+- /health devuelve ok; raíz y ruta SPA de prueba devuelven HTTP 200.
+- Headers nosniff, DENY y Referrer-Policy verificados.
+- Asset JavaScript con HTTP 200 y Cache-Control:
+  public, max-age=31536000, immutable.
+- Proxy /api verificado: transmite la respuesta del backend.
+- Limitación: catálogo en desarrollo devuelve DATABASE_UNAVAILABLE;
+  la conexión a cursos_abiertos funciona, pero la base no tiene tablas.
+  Migraciones pendientes en una corrección separada.
+

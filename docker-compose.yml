@@ -23,10 +23,8 @@ services:
   frontend:
     build:
       context: ./frontend
-    environment:
-      BACKEND_INTERNAL_URL: http://backend:8000
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
     depends_on:
       - backend
 
