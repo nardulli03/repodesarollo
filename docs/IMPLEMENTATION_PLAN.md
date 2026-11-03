@@ -196,3 +196,11 @@ aval y transiciones de estado.
   login, envío de correos ni recuperación de contraseña.
 - Migraciones y habilitación de las tablas en desarrollo pendientes.
 - Commit, PR y merge hacia dev pendientes de registrar.
+
+### Evidencia de T6 — Hook del catálogo
+- Rama: feat/T6-tests-hook-catalogo.
+- Primera ejecución: 23 pruebas fallidas por implementación pendiente.
+- Después de implementar: 23 pruebas aprobadas.
+- Cobertura del hook: líneas 97,67%; ramas 88,13%; funciones 100%.
+- pnpm lint y pnpm build completados correctamente.
+- Las pruebas simulan fetch; no acreditan integración con el backend.

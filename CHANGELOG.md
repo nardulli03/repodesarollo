@@ -22,7 +22,6 @@ Los cambios relevantes del proyecto se registran en este archivo.
   y baja lógica.
 - PostgreSQL exclusivo para pruebas mediante docker-compose.test.yml.
 - 33 pruebas de integración con PostgreSQL, esquemas temporales y rollback.
-### Added
 - Validación de JWT en cookie y sesiones revocables en PostgreSQL.
 - Consulta de identidad mediante GET /api/v1/auth/me.
 - Creación de borradores, envío a revisión y aprobación o rechazo
@@ -30,6 +29,11 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - Registro de decisiones de revisión y control de versión.
 - Protección CSRF con token firmado, cookie, header y Origin.
 - 30 pruebas de sesiones y 26 del flujo HTTP de aportes.
+- Hook useCursos con carga, errores, paginación, filtros y refetch.
+- 23 pruebas con Vitest y Testing Library, incluyendo cancelación
+  y protección frente a respuestas antiguas.
+- Búsqueda y navegación entre páginas en el catálogo.
+
 
 
 ## [v0.1.0] - 2026-10-31
@@ -52,4 +56,5 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - Proxy de Vite configurable para comunicarse con el backend en Docker.
 - Instrucciones de arranque con Docker Compose en el README.
 - El catálogo consulta PostgreSQL y muestra únicamente cursos publicados,
-  con paginación, búsqueda y filtro por categoría.
+con paginación, búsqueda y filtro por categoría.
+- El catálogo utiliza useCursos y permite reintentar sin recargar la página.
