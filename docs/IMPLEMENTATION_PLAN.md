@@ -181,3 +181,18 @@ aval y transiciones de estado.
   get_by_id y del catálogo.
 - Pendientes: pruebas HTTP, migraciones y conexión de endpoints al repository.
 - Pendiente de commit, PR y merge hacia dev.
+
+### Evidencia de T5 — Flujo de aportes y revisión
+
+- Rama: feat/T5-tests-flujo-aportes.
+- Sesiones: 30 pruebas aprobadas.
+- Flujo de aportes: inicialmente 26 fallos por rutas pendientes;
+  después de implementar, 26 pruebas aprobadas.
+- Suite completa: 310 pruebas aprobadas, sin fallos ni omisiones.
+- Cobertura global de app con ramas: 92%.
+- Se comprueban JWT, revocación, permisos, autoría, estados,
+  versiones, decisiones, catálogo y CSRF contra PostgreSQL real.
+- Las pruebas preparan usuarios y sesiones; no acreditan registro,
+  login, envío de correos ni recuperación de contraseña.
+- Migraciones y habilitación de las tablas en desarrollo pendientes.
+- Commit, PR y merge hacia dev pendientes de registrar.
