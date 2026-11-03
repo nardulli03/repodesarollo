@@ -204,3 +204,16 @@ aval y transiciones de estado.
 - Cobertura del hook: líneas 97,67%; ramas 88,13%; funciones 100%.
 - pnpm lint y pnpm build completados correctamente.
 - Las pruebas simulan fetch; no acreditan integración con el backend.
+
+### Evidencia de T7 — Backend multi-stage
+- Rama: feat/T7-backend-multistage.
+- Etapas builder y runtime con python:3.14-slim.
+- Instalación mediante uv sync --frozen --no-dev --no-install-project.
+- Runtime sin uv; ejecución directa de Uvicorn.
+- Usuario appuser, UID 10001.
+- GET /health devuelve {"status":"ok"}; contenedor healthy.
+- El healthcheck comprueba HTTP, no disponibilidad de PostgreSQL.
+- Tamaño local: 273.969.071 bytes, aproximadamente 273,97 MB.
+- Estado: parcial. No cumple todavía el objetivo de menos de 100 MB.
+- La capa Debian y el entorno virtual suman aproximadamente 163,1 MB;
+  limpiar el contexto de construcción no basta para alcanzar el límite.
