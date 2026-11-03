@@ -134,5 +134,65 @@ Esta comprobación valida el scaffold.
 No acredita el CRUD, autenticación ni consultas a PostgreSQL,
 que todavía no están implementados.
 
+## Tickets de clase — T1: reglas de cursos
+- Estado: [x] Implementado y verificado localmente.
+- Rama: feat/T1-tests-reglas-cursos.
+- Implementación: backend/app/cursos/rules.py.
+- Tests: backend/tests/test_cursos_unit.py.
+- Resultado: 153 passed, sin fallos ni casos omitidos.
+- Cobertura del módulo de reglas: 97 %, incluyendo ramas.
+- Commit y merge: pendientes de registrar al integrar el PR.
+
+Se verifican campos obligatorios, longitudes, URL y duplicados,
+año, duración, idioma, nivel, docentes, indicadores, certificado,
+aval y transiciones de estado.
+
+### Evidencia de T2 — Reglas de roadmap
+- Implementación: backend/app/roadmap/rules.py.
+- Pruebas: backend/tests/test_roadmap_unit.py.
+- Primera ejecución: 35 fallos por funciones pendientes de implementación.
+- Después de implementar: 35 pruebas aprobadas.
+- Verificación conjunta con cursos: 188 pruebas aprobadas.
+- Cobertura con ramas: roadmap 100%, cursos 97%, total combinado 98%.
+
+### Evidencia de T3 — Validación y permisos de aportes
+- Implementación: backend/app/aportes/rules.py.
+- Pruebas: backend/tests/test_aportes_unit.py.
+- Primera ejecución: 33 fallos por implementación pendiente.
+- Después de implementar: 33 pruebas aprobadas.
+- Verificación conjunta de cursos, roadmap y aportes: 221 pruebas aprobadas.
+- Cobertura con ramas: aportes 100%, roadmap 100%, cursos 97%;
+  total combinado 98%.
+- Se utilizan códigos de error estables para desacoplar las pruebas
+  de los mensajes de la interfaz.
+- Esta evidencia corresponde a funciones puras; no acredita todavía
+  autenticación HTTP, persistencia ni el flujo integrado de aprobación.
 
 
+### Evidencia de T4 — Repository de cursos
+- 33 pruebas de integración aprobadas contra PostgreSQL 18.6.
+- PostgreSQL real permite comprobar SQL, JSONB, claves foráneas y unicidad
+  con el mismo motor utilizado en desarrollo.
+- Base exclusiva cursos_test, esquema temporal por ejecución y rollback
+  por prueba.
+- Verificación completa: 254 pruebas aprobadas, sin fallos ni omisiones.
+- Cobertura global de app con ramas: 94%; repository de cursos: 92%.
+- La baja es lógica: conserva el registro archivado y lo oculta de
+  get_by_id y del catálogo.
+- Pendientes: pruebas HTTP, migraciones y conexión de endpoints al repository.
+- Pendiente de commit, PR y merge hacia dev.
+
+### Evidencia de T5 — Flujo de aportes y revisión
+
+- Rama: feat/T5-tests-flujo-aportes.
+- Sesiones: 30 pruebas aprobadas.
+- Flujo de aportes: inicialmente 26 fallos por rutas pendientes;
+  después de implementar, 26 pruebas aprobadas.
+- Suite completa: 310 pruebas aprobadas, sin fallos ni omisiones.
+- Cobertura global de app con ramas: 92%.
+- Se comprueban JWT, revocación, permisos, autoría, estados,
+  versiones, decisiones, catálogo y CSRF contra PostgreSQL real.
+- Las pruebas preparan usuarios y sesiones; no acreditan registro,
+  login, envío de correos ni recuperación de contraseña.
+- Migraciones y habilitación de las tablas en desarrollo pendientes.
+- Commit, PR y merge hacia dev pendientes de registrar.
