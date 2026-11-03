@@ -1,0 +1,27 @@
+# Git
+.git
+.gitignore
+
+# Entornos locales y cachés de Python
+.venv
+**/.venv
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+**/.pytest_cache
+
+# Pruebas y reportes
+tests
+**/tests
+.coverage
+.coverage.*
+htmlcov
+coverage
+
+# Configuración local y logs
+.env
+.env.*
+**/.env
+**/.env.*
+*.log
+**/*.log
