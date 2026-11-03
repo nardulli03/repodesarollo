@@ -222,37 +222,3 @@ de un trabajo individual.
 
 Detalle en [GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md).
 El historial previo se conserva; no se afirma cumplimiento retroactivo.
-
-## Tests unitarios de cursos
-Desde la raíz:
-
-```powershell
-cd backend
-uv sync --locked
-uv run python -m pytest tests/test_cursos_unit.py -q --cov=app.cursos.rules --cov-branch --cov-report=term-missing
-```
-
-Resultado verificado: 153 tests aprobados y 97 % de cobertura
-del módulo app.cursos.rules, incluyendo ramas.
-
-### Pruebas del backend con PostgreSQL
-Requiere Docker Desktop iniciado y uv instalado.
-
-```powershell
-docker compose -p cursos-tests -f docker-compose.test.yml up -d --wait
-cd backend
-uv sync --locked
-$env:TEST_DATABASE_URL = "postgresql+psycopg://cursos_test:cursos_test_local@127.0.0.1:5433/cursos_test"
-uv run python -m pytest tests -q --cov=app --cov-branch --cov-report=term-missing
-```
-
-Las credenciales son exclusivas de testing local. Las pruebas crean
-tablas en un esquema temporal dentro de cursos_test; no ejecutan
-migraciones sobre la base de desarrollo.
-
-Para eliminar el contenedor de pruebas, desde backend:
-
-```powershell
-docker compose -p cursos-tests -f ../docker-compose.test.yml down
-```
-
