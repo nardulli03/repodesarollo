@@ -1,0 +1,47 @@
+.catalogo-busqueda {
+  max-width: 680px;
+  margin: 24px 0;
+}
+
+.catalogo-busqueda label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.catalogo-busqueda-controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.catalogo-busqueda input {
+  flex: 1 1 240px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #747775;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+}
+
+.catalogo-busqueda input:focus-visible {
+  outline: 3px solid #174ea6;
+  outline-offset: 3px;
+}
+
+.catalogo-paginacion {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.catalogo-paginacion button:disabled {
+  background: #e8eaed;
+  color: #5f6368;
+  cursor: default;
+}
