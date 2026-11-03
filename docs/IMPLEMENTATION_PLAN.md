@@ -169,3 +169,15 @@ aval y transiciones de estado.
   autenticación HTTP, persistencia ni el flujo integrado de aprobación.
 
 
+### Evidencia de T4 — Repository de cursos
+- 33 pruebas de integración aprobadas contra PostgreSQL 18.6.
+- PostgreSQL real permite comprobar SQL, JSONB, claves foráneas y unicidad
+  con el mismo motor utilizado en desarrollo.
+- Base exclusiva cursos_test, esquema temporal por ejecución y rollback
+  por prueba.
+- Verificación completa: 254 pruebas aprobadas, sin fallos ni omisiones.
+- Cobertura global de app con ramas: 94%; repository de cursos: 92%.
+- La baja es lógica: conserva el registro archivado y lo oculta de
+  get_by_id y del catálogo.
+- Pendientes: pruebas HTTP, migraciones y conexión de endpoints al repository.
+- Pendiente de commit, PR y merge hacia dev.

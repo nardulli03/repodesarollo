@@ -17,9 +17,14 @@ Los cambios relevantes del proyecto se registran en este archivo.
   del enlace para aprobar.
 - 33 pruebas unitarias de revisión de aportes, con cobertura de líneas
   y ramas del 100%.
+  - Persistencia de cursos con SQLAlchemy y Psycopg: creación, consulta,
+  catálogo paginado, búsqueda, filtro por categoría, actualización parcial
+  y baja lógica.
+- PostgreSQL exclusivo para pruebas mediante docker-compose.test.yml.
+- 33 pruebas de integración con PostgreSQL, esquemas temporales y rollback.
 ## [v0.1.0] - 2026-10-31
 
-### Added
+
 
 ### Added
 - Estructura inicial de backend y frontend organizada por dominios.
