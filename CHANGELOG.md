@@ -33,7 +33,10 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - 23 pruebas con Vitest y Testing Library, incluyendo cancelación
   y protección frente a respuestas antiguas.
 - Búsqueda y navegación entre páginas en el catálogo.
-
+- Backend con Dockerfile de dos etapas, dependencias sin herramientas
+  de desarrollo, ejecución como appuser y healthcheck HTTP.
+- Imagen verificada: 273.969.071 bytes. El objetivo de menos de 100 MB
+  todavía no se cumple.
 
 
 ## [v0.1.0] - 2026-10-31
