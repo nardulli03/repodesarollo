@@ -254,3 +254,12 @@ aval y transiciones de estado.
 - Catálogo mediante Nginx: HTTP 200 con lista vacía.
 - Suite completa: 312 pruebas aprobadas; cobertura de app con ramas: 92%.
 - Commit, PR y merge hacia dev pendientes de registrar.
+
+### Evidencia de T10 — Healthchecks de Docker Compose
+
+- Rama `feat/T10-compose-healthchecks`.
+- PostgreSQL se comprueba con `pg_isready`, el backend con su healthcheck
+  del Dockerfile y Nginx mediante `/health`.
+- `docker compose ps` mostró los tres servicios `healthy`.
+- `GET /api/v1/courses` a través de Nginx devolvió HTTP 200 y una lista vacía.
+- La verificación se hizo con la revisión `0001_initial` aplicada.
