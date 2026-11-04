@@ -1,289 +1,89 @@
+# Plan de implementación — Cursos Abiertos
 
-IMPLEMENTATION_PLAN — Cursos Abiertos
-Versión 2.0. Modalidad individual. Tareas planificadas, ninguna se marca implementada. La aprobación por correo con T1 es condición de inicio de B.
+Modalidad individual. Este documento reúne el alcance de la Instancia B, el trabajo pendiente del MVP y la evidencia del ciclo de pruebas e infraestructura. El scaffold inicial se publicó como `v0.1.0`.
 
-1. MVP P0 y fases
-P0 incluye HU-01..HU-12 del PRD: catálogo, ficha, registro/login/logout, recuperación, rate limit, aporte y CRUD propio, roadmap personal, revisión administrativa, progreso, verificación y consulta de aportes. Sin roadmaps públicos, worker, carga propia de videos ni categorías editables.
+## 1. Alcance y fases
 
-DoD B: en máquina limpia, clonar, seguir README, docker compose up, acceder a frontend5173/API8000/Mailpit8025 y completar las historias P0 desde UI con PostgreSQL persistente; sin errores de consola que impidan los recorridos. README debe tener comandos exactos realmente verificados, migración, seed, variables, URLs y datos locales. No se presenta este objetivo como logrado.
+El MVP P0 comprende las historias HU-01 a HU-12 del PRD: catálogo y ficha, identidad y verificación de correo, recuperación de contraseña, límite de intentos, aportes de cursos, revisión administrativa, roadmap privado y progreso. Quedan fuera los roadmaps públicos, un worker separado, la carga de videos y la edición de categorías.
 
-A: corregir documentación, versionar, pedir revisión y esperar APROBADO/T1. B: construir funcionalidades y comprobarlas manualmente. Continuidad: pruebas automatizadas, Docker multi-stage, .dockerignore, no-root, caché y healthchecks avanzados en tickets de clase. No son precondición P0 de B.
+- **Instancia A.** Revisar y versionar la documentación, conservar las fuentes originales y solicitar la aprobación docente.
+- **Instancia B.** Implementar las historias P0 y comprobar sus recorridos en la interfaz.
+- **Continuidad.** Incorporar pruebas automatizadas, imágenes de múltiples etapas, exclusiones de Docker, ejecución sin privilegios, caché y healthchecks.
 
+La Instancia B se completa cuando una persona puede clonar el repositorio en un entorno limpio, seguir el README, aplicar migraciones, cargar datos de prueba y recorrer las historias P0 desde la interfaz. PostgreSQL debe conservar los datos al reiniciar. Los recorridos de correo requieren un entorno de prueba como Mailpit. La verificación del scaffold y las pruebas del ciclo acreditan los puntos registrados en este plan.
 
-2. Módulos y dependencias
-Dependencias indican prerrequisitos, no trabajo paralelo de integrantes. Una funcionalidad principal en curso.
+## 2. Estado y trabajo por módulo
 
-3. Detalle por módulo
-A — Revisión documental
-A1: reemplazar documentos y conservar originales	Archivos/nombres/enlaces correctos; diff revisado.	1–2 h
-A2: revisión cruzada y PR	Historias/pantallas/API/tablas/tareas consistentes, sin placeholders de decisiones salvo versiones verificables y datos personales.	1–2 h
+Las horas corresponden a estimaciones iniciales.
 
-M0 — Base e infraestructura, después del T1
-0.1	Resolver versiones y estructura TRD	Versiones verificadas registradas; carpetas por dominio; manifests/locks del stack.	1 h
-
-0.2	Compose y Dockerfiles mínimos	BD, migrate, API, UI, Mailpit levantan siguiendo README; API responde GET /health con 200 y confirma conexión en entorno local sin secretos.	2 h
-
-0.3	Modelos y Alembic	Base vacía migra con tablas, FK, UNIQUE y CHECK del schema.	3 h
-
-0.4	Seeds idempotentes	Categorías y cursos con datos reales revisados; dos cuentas diferentes para autor/admin, claves desde entorno; repetir no duplica.	1 h
-GET /health es endpoint operativo público fuera de /api/v1; 200 vivo y BD disponible, 503 si BD inaccesible, sin datos de conexión. La versión definitiva y su contrato deben conservarse en BackendSchema.
-
-M1 — Identidad, JWT y correo
-1.1	Registro y hashing	Cuenta student y roadmap vacío atómicos; email único, password no legible y rol del cliente rechazado.	2 h
-
-1.2	Verificación/reenvío y UI	Email en Mailpit, confirmar una vez, pendiente no inicia sesión, reenviar invalida anterior.	3 h
-
-1.3	Login/me/logout, CSRF y guardas	Cookie JWT validada, acceso privado, logout revocado; falta CSRF/origen se rechaza.	3 h
-
-1.4	Rate limit compartido	Cuota antes del hashing, 429/Retry-After; reinicio API conserva contador.	2 h
-
-1.5	Recuperación completa	Email local, cambio, token consumido, sesiones previas inválidas, contraseña anterior falla.	3 h
-
-M2 — Catálogo
-2.1	Listados y detalle API	Publicados únicamente; categorías paginadas; filtros/orden estables.	2 h
-
-2.2	UI catálogo/ficha/header	Búsqueda en URL, cards, ficha completa, estados y menú móvil funcional.	3 h
-
-2.3	Tokens y adaptación base	Estilos mobile-first visibles y mejoras min-width; todos los listados conservan paginación.	2 h
-
-M3 — Aportes y validación
-3.1	CRUD de autor	Propietario desde JWT, metadatos completos y estados; ajeno404; URL duplicada409.	3 h
-
-3.2	Formularios y propios	Guardar/editar/enviar/archivar desde UI, declaración sí/no y estado/motivo visibles.	3 h
-
-3.3	Revisión admin	Cola paginada, aprobar tras comprobar enlace, rechazar con motivo, auto-revisión403.	3 h
-
-3.4	Edición publicada y conflictos	Sale del catálogo al volver a borrador; roadmap conserva referencia; versión vieja409.	1 h
-
-M4 — Roadmap personal
-4.1	Agregar/quitar y privacidad	Solo publicados al agregar, sin duplicados, lista propia y límite100; usuarioB no accede a itemA.	2 h
-
-4.2	Reordenar y paginar	Mover posición global cambia orden persistente incluso entre páginas, sin huecos.	2 h
-
-4.3	Progreso y UI	Fracción/porcentaje y siguiente disponible correctos; quitar advierte que borra avance; no disponible bloquea actualización de estado.	3 h
-
-M5 — Integración y entrega
-5.1	Recorrer aceptación P0	Matriz §5 completada con evidencia real y problemas registrados, no solo compilación.	3 h
-
-5.2	Instalación limpia y README	Persona sigue comandos exactos y completa flujo sin pasos implícitos; datos persisten al reiniciar.	2 h
-
-5.3	UX/seguridad/documentación	Teclado, contraste y 360/768/1440 revisados; API, UI y docs coinciden.	2 h
-
-4. Ejecución y tablero
-Issues HU-01 a HU-12; cada uno incluye RF/RN/RNF, aceptación del PRD, subtareas de §3, dependencias, evidencia y rama/commit. Estados Pendiente/En curso/En revisión/Terminado; WIP1 por ser individual.
-
-A1-A2	A	[]	docs/modificaciones-consigna; correcciones preparadas, pendiente integrar/revisar.
-A3	A	[ ]	Pendiente PR/merge.
-0.1-0.4	M0	[ ]	
-1.1-1.5	M1	[ ]	—
-2.1-2.3	M2	[ ]	—
-3.1-3.4	M3	[ ]	—
-4.1-4.3	M4	[ ]	—
-5.1-5.3	M5	[ ]	—
-
-Cada tarea al ejecutarse se desglosa en su fila o issue y recibe rama/commit propios o lote coherente. No marcar módulo completo por haber terminado una sola subtarea. [x] solo tras evidencia.
-
-5. Evidencia y estrategia de testing
-Aceptación funcional de B
-Historias	Requisitos/reglas	Evidencia esperada, todavía no producida
-
-HU-01/02	RF-06/13, RN-01, RNF-02/03	Capturas o registro de catálogo/filtros/ficha y páginas; borrador no visible.
-
-HU-03/11	RF-01/02/03/12, RN-13, RNF-01	Registro→Mailpit→confirmación→JWT→logout; pending no emite acceso.
-
-HU-04	RF-04, RNF-01/07	Reset exitoso, token repetido inválido y sesión previa rechazada.
-
-HU-05	RF-05	429/Retry-After y conservación tras reinicio de API.
-
-HU-06/07/12	RF-07/08/09, RN-02/04/07/08/10	Aporte completo, rechazo/corrección, ajeno404, archivo y edición publicada.
-
-HU-08/10	RF-10/11, RN-03/05/09/11/12	Dos usuarios aislados, orden entre páginas, duplicado y progreso; no disponible con aviso.
-
-HU-09	RF-09, RN-01/06	Admin distinto valida y curso aparece; no auto-revisión; motivo al rechazar.
-
-Todas	RNF-04/05/06/09	Clon limpio, estructura por dominio, teclado/contraste y revisión de logs sin secretos.
-
-Evidencias con cuentas de demo; ocultar tokens/cookies/password. La validación humana de enlaces registra URL fuente.
-
-
-## Seguimiento del scaffold — T1 a T5
-
-| Ticket | Estado | Evidencia |
+| Módulo | Estado actual | Tareas y criterios de aceptación |
 | --- | --- | --- |
-| T1: estructura y configuración | [x] | PR #2, merge 1154ffa |
-| T2: backend mínimo | [x] | PR #3, merge 97e0e5a |
-| T3: frontend mínimo | [x] | PR #4, merge 26e1cc4 |
-| T4: Docker Compose | [x] | PR #6, merge fcf87cc; completa los archivos omitidos en PR #5 |
-| T5: documentación y verificación del release | [x] | Clon limpio de dev verificado antes de publicar |
-| T5: integración en main y tag v0.1.0 | [ ] | Pendiente de publicación |
+| A — Documentación | Correcciones integradas por el PR #1 | A1. Conservar originales y revisar archivos, nombres, enlaces y diff (1–2 h). A2. Contrastar historias, pantallas, API y tablas y registrar la revisión en un PR (1–2 h). |
+| M0 — Base e infraestructura | Stack, Compose y migración inicial verificados | 0.1. Registrar versiones, estructura y lockfiles (1 h). 0.2. Levantar BD, API e interfaz siguiendo el README (2 h). 0.3. Migrar una base vacía con las restricciones del modelo (3 h). 0.4. Cargar categorías, cursos y cuentas de demo sin duplicar datos al repetir el seed (1 h, pendiente). |
+| M1 — Identidad y correo | Validación de JWT, sesiones revocables, identidad y CSRF comprobadas por pruebas HTTP | 1.1. Registrar una cuenta de estudiante y su roadmap en una transacción, con correo único y contraseña hasheada (2 h). 1.2. Verificar correo y permitir reenvío, invalidando el token anterior (3 h). 1.3. Completar login y logout con cookie JWT y revocación (3 h). 1.4. Aplicar límite de intentos persistente y responder 429 con Retry-After (2 h). 1.5. Recuperar contraseña con token de un solo uso y revocar sesiones previas (3 h). |
+| M2 — Catálogo | Listado de publicados, búsqueda, paginación, filtro de categoría en API y estados de interfaz verificados | 2.1. Completar ficha y listado paginado de categorías (2 h). 2.2. Completar ficha, filtros en URL y navegación móvil (3 h). 2.3. Revisar tokens, adaptación y paginación en los listados (2 h). |
+| M3 — Aportes y revisión | API de borradores, envío a revisión, aprobación y rechazo verificada | 3.1. Completar el CRUD HTTP de autor, con propiedad derivada de la sesión, 404 para aportes ajenos y 409 para duplicados (3 h). 3.2. Incorporar formularios y consulta de aportes propios (3 h). 3.3. Completar la cola paginada y la interfaz administrativa, con motivo de rechazo y prohibición de autorrevisión (3 h). 3.4. Completar edición y archivo de publicaciones, conservar referencias del roadmap y gestionar conflictos de versión (1 h). |
+| M4 — Roadmap | Reglas y pruebas unitarias verificadas | 4.1. Integrar agregado y retiro de cursos, privacidad, límite de 100 y validación de duplicados (2 h). 4.2. Persistir el orden global incluso entre páginas (2 h). 4.3. Implementar progreso, siguiente curso disponible y avisos en la interfaz (3 h). |
+| M5 — Integración y entrega | Clon limpio del scaffold y arranque del ciclo verificados | 5.1. Completar la matriz de aceptación P0 (3 h). 5.2. Verificar instalación limpia y persistencia tras reiniciar con el flujo completo (2 h). 5.3. Revisar teclado, contraste, anchos de 360/768/1440 px y coherencia de documentación, API e interfaz (2 h). |
 
-### Verificación del clon limpio
-Se clonó dev en una carpeta independiente y se creó .env
-desde .env.example.
+El `GET /health` actual comprueba que el proceso HTTP responde. La consulta del catálogo a través de Nginx comprueba también el acceso a PostgreSQL. Queda pendiente el contrato de salud de base de datos previsto en BackendSchema.
 
-Comando de arranque:
-    docker compose -p cursos-verificacion-v010 up -d --build
+## 3. Ejecución y seguimiento
 
-Resultados:
-- PostgreSQL, backend y frontend en estado Up.
-- GET /health respondió {"status":"ok"}.
-- Frontend accesible en http://localhost:5173.
-- La pantalla mostró el catálogo vacío.
+Organizar el tablero por historias HU-01 a HU-12. Cada issue debe registrar requisitos, aceptación, dependencias, subtareas, rama o commit y evidencia. Usar los estados Pendiente, En curso, En revisión y Terminado, con una tarea principal en curso.
 
-Esta comprobación valida el scaffold.
-No acredita el CRUD, autenticación ni consultas a PostgreSQL,
-que todavía no están implementados.
+Las ramas de trabajo parten de `dev` y se integran mediante PR hacia `dev`. El flujo reserva `main` para releases con changelog y tag anotado. El historial conserva commits previos que no cumplen Conventional Commits y merges accidentales hacia `main`.
 
-## Tickets de clase — T1: reglas de cursos
-- Estado: [x] Implementado y verificado localmente.
-- Rama: feat/T1-tests-reglas-cursos.
-- Implementación: backend/app/cursos/rules.py.
-- Tests: backend/tests/test_cursos_unit.py.
-- Resultado: 153 passed, sin fallos ni casos omitidos.
-- Cobertura del módulo de reglas: 97 %, incluyendo ramas.
-- Commit y merge: pendientes de registrar al integrar el PR.
+## 4. Estrategia de pruebas y aceptación
 
-Se verifican campos obligatorios, longitudes, URL y duplicados,
-año, duración, idioma, nivel, docentes, indicadores, certificado,
-aval y transiciones de estado.
+Las pruebas unitarias comprueban reglas puras. La integración del backend usa PostgreSQL de testing y esquemas temporales. Las pruebas del hook simulan `fetch` para comprobar el estado del frontend. Los recorridos HTTP por Nginx y el arranque con Compose complementan esas pruebas.
 
-### Evidencia de T2 — Reglas de roadmap
-- Implementación: backend/app/roadmap/rules.py.
-- Pruebas: backend/tests/test_roadmap_unit.py.
-- Primera ejecución: 35 fallos por funciones pendientes de implementación.
-- Después de implementar: 35 pruebas aprobadas.
-- Verificación conjunta con cursos: 188 pruebas aprobadas.
-- Cobertura con ramas: roadmap 100%, cursos 97%, total combinado 98%.
+| Historias | Requisitos y reglas | Evidencia de aceptación del MVP |
+| --- | --- | --- |
+| HU-01 y HU-02 | RF-06/13, RN-01, RNF-02/03 | Catálogo, filtros, ficha y páginas. Los borradores permanecen fuera del catálogo. |
+| HU-03 y HU-11 | RF-01/02/03/12, RN-13, RNF-01 | Registro, correo de verificación, confirmación, login y logout. Una cuenta sin verificar queda sin acceso. |
+| HU-04 | RF-04, RNF-01/07 | Cambio de contraseña, rechazo de token reutilizado y revocación de sesiones anteriores. |
+| HU-05 | RF-05 | Respuesta 429 con Retry-After y conservación del contador tras reiniciar la API. |
+| HU-06, HU-07 y HU-12 | RF-07/08/09, RN-02/04/07/08/10 | Aporte, rechazo, corrección, edición y archivo. Un usuario ajeno recibe 404. |
+| HU-08 y HU-10 | RF-10/11, RN-03/05/09/11/12 | Privacidad con dos cuentas, orden entre páginas, duplicados, progreso y avisos de indisponibilidad. |
+| HU-09 | RF-09, RN-01/06 | Un administrador distinto del autor aprueba y el curso aparece en el catálogo. El rechazo exige motivo. |
+| Todas | RNF-04/05/06/09 | Clon limpio, estructura por dominio, teclado, contraste y logs sin secretos. |
 
-### Evidencia de T3 — Validación y permisos de aportes
-- Implementación: backend/app/aportes/rules.py.
-- Pruebas: backend/tests/test_aportes_unit.py.
-- Primera ejecución: 33 fallos por implementación pendiente.
-- Después de implementar: 33 pruebas aprobadas.
-- Verificación conjunta de cursos, roadmap y aportes: 221 pruebas aprobadas.
-- Cobertura con ramas: aportes 100%, roadmap 100%, cursos 97%;
-  total combinado 98%.
-- Se utilizan códigos de error estables para desacoplar las pruebas
-  de los mensajes de la interfaz.
-- Esta evidencia corresponde a funciones puras; no acredita todavía
-  autenticación HTTP, persistencia ni el flujo integrado de aprobación.
+Registrar resultados reales y pasos reproducibles. Usar cuentas de demo, ocultar credenciales y registrar la URL fuente al comprobar un enlace.
 
+## 5. Evidencia del scaffold
 
-### Evidencia de T4 — Repository de cursos
-- 33 pruebas de integración aprobadas contra PostgreSQL 18.6.
-- PostgreSQL real permite comprobar SQL, JSONB, claves foráneas y unicidad
-  con el mismo motor utilizado en desarrollo.
-- Base exclusiva cursos_test, esquema temporal por ejecución y rollback
-  por prueba.
-- Verificación completa: 254 pruebas aprobadas, sin fallos ni omisiones.
-- Cobertura global de app con ramas: 94%; repository de cursos: 92%.
-- La baja es lógica: conserva el registro archivado y lo oculta de
-  get_by_id y del catálogo.
-- Pendientes: pruebas HTTP, migraciones y conexión de endpoints al repository.
-- Pendiente de commit, PR y merge hacia dev.
-
-### Evidencia de T5 — Flujo de aportes y revisión
-
-- Rama: feat/T5-tests-flujo-aportes.
-- Sesiones: 30 pruebas aprobadas.
-- Flujo de aportes: inicialmente 26 fallos por rutas pendientes;
-  después de implementar, 26 pruebas aprobadas.
-- Suite completa: 310 pruebas aprobadas, sin fallos ni omisiones.
-- Cobertura global de app con ramas: 92%.
-- Se comprueban JWT, revocación, permisos, autoría, estados,
-  versiones, decisiones, catálogo y CSRF contra PostgreSQL real.
-- Las pruebas preparan usuarios y sesiones; no acreditan registro,
-  login, envío de correos ni recuperación de contraseña.
-- Migraciones y habilitación de las tablas en desarrollo pendientes.
-- Commit, PR y merge hacia dev pendientes de registrar.
-
-### Evidencia de T6 — Hook del catálogo
-- Rama: feat/T6-tests-hook-catalogo.
-- Primera ejecución: 23 pruebas fallidas por implementación pendiente.
-- Después de implementar: 23 pruebas aprobadas.
-- Cobertura del hook: líneas 97,67%; ramas 88,13%; funciones 100%.
-- pnpm lint y pnpm build completados correctamente.
-- Las pruebas simulan fetch; no acreditan integración con el backend.
-
-### Evidencia de T7 — Backend multi-stage
-- Rama: feat/T7-backend-multistage.
-- Etapas builder y runtime con python:3.14-slim.
-- Instalación mediante uv sync --frozen --no-dev --no-install-project.
-- Runtime sin uv; ejecución directa de Uvicorn.
-- Usuario appuser, UID 10001.
-- GET /health devuelve {"status":"ok"}; contenedor healthy.
-- El healthcheck comprueba HTTP, no disponibilidad de PostgreSQL.
-- Tamaño local: 273.969.071 bytes, aproximadamente 273,97 MB.
-- Estado: parcial. No cumple todavía el objetivo de menos de 100 MB.
-- La capa Debian y el entorno virtual suman aproximadamente 163,1 MB;
-  limpiar el contexto de construcción no basta para alcanzar el límite.
-
-  ### Evidencia de T8 — Dockerignore
-
-- Rama: feat/T8-dockerignore.
-- Agregados backend/.dockerignore y frontend/.dockerignore.
-- Imágenes reconstruidas con --no-cache --progress=plain.
-- Backend: 0 carpetas __pycache__ dentro de /app/app.
-- Frontend: useCursos.test.js ausente de la imagen.
-- Se conservan los archivos necesarios para instalar dependencias
-  y construir la aplicación.
-
-### Evidencia de T9 — Frontend con Nginx
-- Rama: feat/T9-frontend-nginx.
-- Builder: node:24-alpine; runtime: nginx:1.30.6-alpine-slim.
-- Se conserva Node 24 por compatibilidad con las herramientas actuales.
-- Construcción y nginx -t correctos.
-- Tamaño local: 20.896.193 bytes, aproximadamente 20,90 MB;
-  cumple el objetivo de menos de 30 MB.
-- /health devuelve ok; raíz y ruta SPA de prueba devuelven HTTP 200.
-- Headers nosniff, DENY y Referrer-Policy verificados.
-- Asset JavaScript con HTTP 200 y Cache-Control:
-  public, max-age=31536000, immutable.
-- Proxy /api verificado: transmite la respuesta del backend.
-- Limitación: catálogo en desarrollo devuelve DATABASE_UNAVAILABLE;
-  la conexión a cursos_abiertos funciona, pero la base no tiene tablas.
-  Migraciones pendientes en una corrección separada.
-
-### Corrección — Migraciones del backend
-- Rama: fix/migraciones-backend.
-- Revisión inicial: 0001_initial.
-- Docker incorpora Alembic, su configuración y las migraciones.
-- Upgrade aplicado a cursos_abiertos; alembic current indica head.
-- alembic check no detecta diferencias con los modelos.
-- Repetición de upgrade y reversión verificadas en esquemas de testing.
-- Catálogo mediante Nginx: HTTP 200 con lista vacía.
-- Suite completa: 312 pruebas aprobadas; cobertura de app con ramas: 92%.
-- Commit, PR y merge hacia dev pendientes de registrar.
-
-### Evidencia de T10 — Healthchecks de Docker Compose
-
-- Rama `feat/T10-compose-healthchecks`.
-- PostgreSQL se comprueba con `pg_isready`, el backend con su healthcheck
-  del Dockerfile y Nginx mediante `/health`.
-- `docker compose ps` mostró los tres servicios `healthy`.
-- `GET /api/v1/courses` a través de Nginx devolvió HTTP 200 y una lista vacía.
-- La verificación se hizo con la revisión `0001_initial` aplicada.
-
-### Cierre de T11 — Evidencia de integración
-
-| Ticket | Evidencia |
+| Ticket | Resultado |
 | --- | --- |
-| T1–T3 | Reglas y pruebas unitarias integradas en los PR #8, #9 y #10. |
-| T4 | Repositorio de cursos y pruebas PostgreSQL recuperados en dev por el PR #15. |
-| T5 | Flujo HTTP de aportes, sesiones y CSRF integrado en el PR #16. |
-| T6 | Hook del catálogo integrado en el PR #19. Pasaron 23 pruebas, lint y build. |
-| T7 | PR #20. Arranque, usuario sin privilegios y healthcheck verificados. Tamaño pendiente: 273,97 MB frente al límite de 100 MB. |
-| T8 | Exclusiones de los contextos Docker verificadas en el PR #22. |
-| T9 | PR #23. Nginx, SPA, proxy y caché verificados. Imagen de 20,90 MB. |
-| Migraciones | PR #24. Catálogo HTTP 200 y 312 pruebas de backend aprobadas, con 92% de cobertura de app con ramas. |
-| T10 | PR #25. Tres servicios healthy y catálogo HTTP 200 a través de Nginx. |
+| T1 — Estructura y configuración | PR #2, merge `1154ffa`. |
+| T2 — Backend mínimo | PR #3, merge `97e0e5a`. |
+| T3 — Frontend mínimo | PR #4, merge `26e1cc4`. |
+| T4 — Docker Compose | PR #5 y corrección en PR #6, merge `fcf87cc`. |
+| T5 — Verificación y publicación | Clon limpio de `dev` verificado. Release `v0.1.0` integrado en `main` mediante PR #7. |
+
+En el clon limpio se creó `.env` desde el ejemplo y se levantaron los servicios con `docker compose -p cursos-verificacion-v010 up -d --build`. Se verificaron los tres contenedores en estado `Up`, el backend con HTTP 200 en `/health` y el frontend accesible con el catálogo inicial vacío.
+
+## 6. Evidencia del ciclo de clase
+
+| Ticket | Resultado y trazabilidad |
+| --- | --- |
+| T1 — Reglas de cursos | 153 pruebas unitarias aprobadas y 97 % de cobertura del módulo con ramas. PR #8. |
+| T2 — Roadmap | 35 pruebas aprobadas y 100 % de cobertura de líneas y ramas del módulo. PR #9. |
+| T3 — Revisión de aportes | 33 pruebas aprobadas y 100 % de cobertura de líneas y ramas del módulo. PR #10. |
+| T4 — Repositorio de cursos | 33 pruebas de integración con PostgreSQL. Creación, consulta, paginación, búsqueda, filtros, actualización y baja lógica. Trabajo recuperado en `dev` por el PR #15. |
+| T5 — Flujo HTTP | 30 pruebas de sesiones y 26 de aportes. Se comprobó autorización, revisión, catálogo y CSRF. PR #16. |
+| T6 — Hook del catálogo | 23 pruebas aprobadas, lint y build correctos. Cobertura de `useCursos.js`: 97,67 % de líneas y 88,13 % de ramas. PR #19. |
+| T7 — Imagen del backend | Múltiples etapas, Uvicorn como `appuser` con UID 10001, `uv` ausente del runtime y contenedor saludable. **Parcial:** 273.969.071 bytes (273,97 MB) frente al objetivo de menos de 100 MB. PR #20. |
+| T8 — Contextos Docker | Se reconstruyeron ambas imágenes y se verificó la exclusión de cachés de Python y de la prueba del hook del frontend. PR #22. |
+| T9 — Nginx | Build con Node.js 24, runtime Alpine Slim, fallback SPA, proxy, headers y caché de assets con hash. Imagen de 20.896.193 bytes (20,90 MB), por debajo de 30 MB. PR #23. |
+| Corrección — Migraciones | Revisión `0001_initial` aplicada y `alembic check` sin diferencias. El catálogo pasó a HTTP 200 a través de Nginx. Suite de backend: 312 pruebas aprobadas y 92 % de cobertura de `app` con ramas. PR #24. |
+| T10 — Healthchecks | PostgreSQL con `pg_isready`, backend con el healthcheck de su Dockerfile y Nginx con `/health`. Tres servicios `healthy` y catálogo HTTP 200. PR #25. |
+| T11 — Cierre | Changelog, plan y retrospectiva integrados en `dev` mediante PR #27, merge `053c86b`. |
 
 ### Retrospectiva
 
-- Las pruebas previas a cada PR ayudaron a detectar errores antes de integrar.
-- PostgreSQL aislado permitió comprobar persistencia y migraciones.
-- Los merges accidentales hacia main hicieron necesario verificar la rama base en cada PR.
-- El catálogo se comprobó a través de Nginx después de aplicar la migración inicial.
-- El tamaño del backend queda como mejora pendiente y se conserva la medición real.
-
-El historial conserva commits anteriores que no cumplen Conventional Commits.
+- Ejecutar pruebas antes de abrir cada PR permitió detectar errores antes de integrar.
+- PostgreSQL de testing permitió verificar persistencia y migraciones con datos aislados.
+- Los merges accidentales hacia main llevaron a verificar la rama base antes de fusionar.
+- La prueba del catálogo por Nginx reveló que faltaban las tablas de desarrollo y motivó la migración inicial.
+- La medición de la imagen del backend dejó registrado el objetivo de tamaño pendiente.
