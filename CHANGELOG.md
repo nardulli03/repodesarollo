@@ -17,7 +17,7 @@ Los cambios relevantes del proyecto se registran en este archivo.
   del enlace para aprobar.
 - 33 pruebas unitarias de revisión de aportes, con cobertura de líneas
   y ramas del 100%.
-  - Persistencia de cursos con SQLAlchemy y Psycopg: creación, consulta,
+- Persistencia de cursos con SQLAlchemy y Psycopg: creación, consulta,
   catálogo paginado, búsqueda, filtro por categoría, actualización parcial
   y baja lógica.
 - PostgreSQL exclusivo para pruebas mediante docker-compose.test.yml.
@@ -45,6 +45,16 @@ Los cambios relevantes del proyecto se registran en este archivo.
   sesiones y revisiones.
 - Dos pruebas de migraciones sobre esquemas temporales de cursos_test.
 
+### Changed
+
+- El catálogo consulta PostgreSQL y muestra únicamente cursos publicados,
+  con paginación, búsqueda y filtro por categoría.
+- El catálogo utiliza useCursos y permite reintentar sin recargar la página.
+- Frontend compilado con Node 24 y servido desde Nginx Alpine Slim.
+- Compose conserva localhost:5173 y lo conecta al puerto 80 de Nginx.
+- Docker Compose espera a PostgreSQL antes de iniciar el backend y al
+  backend antes de iniciar Nginx, mediante healthchecks.
+
 ### Fixed
 - Error DATABASE_UNAVAILABLE del catálogo causado por la ausencia
   de tablas en la base de desarrollo.
@@ -69,8 +79,3 @@ Los cambios relevantes del proyecto se registran en este archivo.
 ### Changed
 - Proxy de Vite configurable para comunicarse con el backend en Docker.
 - Instrucciones de arranque con Docker Compose en el README.
-- El catálogo consulta PostgreSQL y muestra únicamente cursos publicados,
-con paginación, búsqueda y filtro por categoría.
-- El catálogo utiliza useCursos y permite reintentar sin recargar la página.
-- Frontend compilado con Node 24 y servido desde Nginx Alpine Slim.
-- Compose conserva localhost:5173 y lo conecta al puerto 80 de Nginx.
