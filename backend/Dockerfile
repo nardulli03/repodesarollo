@@ -29,6 +29,8 @@ RUN useradd --system --uid 10001 --user-group \
 
 COPY --from=builder /app/.venv /app/.venv
 COPY app ./app
+COPY alembic.ini ./
+COPY migrations ./migrations
 
 USER appuser
 
