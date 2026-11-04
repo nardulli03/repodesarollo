@@ -256,3 +256,15 @@ Para eliminar el contenedor de pruebas, desde backend:
 docker compose -p cursos-tests -f ../docker-compose.test.yml down
 ```
 
+arranque con Docker.
+docker compose build
+docker compose up -d postgres
+docker compose run --rm --no-deps backend alembic upgrade head
+docker compose up -d backend frontend
+
+Aplicar las migraciones antes de consultar el catálogo. alembic upgrade head aplica únicamente las revisiones pendientes. Mientras no se incorpore la espera por healthchecks en T10, PostgreSQL debe estar listo antes de ejecutar la migración.
+
+docker compose build
+docker compose up -d --wait postgres
+docker compose run --rm --no-deps backend alembic upgrade head
+docker compose up -d --wait backend frontend

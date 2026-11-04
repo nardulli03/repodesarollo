@@ -204,3 +204,86 @@ aval y transiciones de estado.
 - Cobertura del hook: líneas 97,67%; ramas 88,13%; funciones 100%.
 - pnpm lint y pnpm build completados correctamente.
 - Las pruebas simulan fetch; no acreditan integración con el backend.
+
+### Evidencia de T7 — Backend multi-stage
+- Rama: feat/T7-backend-multistage.
+- Etapas builder y runtime con python:3.14-slim.
+- Instalación mediante uv sync --frozen --no-dev --no-install-project.
+- Runtime sin uv; ejecución directa de Uvicorn.
+- Usuario appuser, UID 10001.
+- GET /health devuelve {"status":"ok"}; contenedor healthy.
+- El healthcheck comprueba HTTP, no disponibilidad de PostgreSQL.
+- Tamaño local: 273.969.071 bytes, aproximadamente 273,97 MB.
+- Estado: parcial. No cumple todavía el objetivo de menos de 100 MB.
+- La capa Debian y el entorno virtual suman aproximadamente 163,1 MB;
+  limpiar el contexto de construcción no basta para alcanzar el límite.
+
+  ### Evidencia de T8 — Dockerignore
+
+- Rama: feat/T8-dockerignore.
+- Agregados backend/.dockerignore y frontend/.dockerignore.
+- Imágenes reconstruidas con --no-cache --progress=plain.
+- Backend: 0 carpetas __pycache__ dentro de /app/app.
+- Frontend: useCursos.test.js ausente de la imagen.
+- Se conservan los archivos necesarios para instalar dependencias
+  y construir la aplicación.
+
+### Evidencia de T9 — Frontend con Nginx
+- Rama: feat/T9-frontend-nginx.
+- Builder: node:24-alpine; runtime: nginx:1.30.6-alpine-slim.
+- Se conserva Node 24 por compatibilidad con las herramientas actuales.
+- Construcción y nginx -t correctos.
+- Tamaño local: 20.896.193 bytes, aproximadamente 20,90 MB;
+  cumple el objetivo de menos de 30 MB.
+- /health devuelve ok; raíz y ruta SPA de prueba devuelven HTTP 200.
+- Headers nosniff, DENY y Referrer-Policy verificados.
+- Asset JavaScript con HTTP 200 y Cache-Control:
+  public, max-age=31536000, immutable.
+- Proxy /api verificado: transmite la respuesta del backend.
+- Limitación: catálogo en desarrollo devuelve DATABASE_UNAVAILABLE;
+  la conexión a cursos_abiertos funciona, pero la base no tiene tablas.
+  Migraciones pendientes en una corrección separada.
+
+### Corrección — Migraciones del backend
+- Rama: fix/migraciones-backend.
+- Revisión inicial: 0001_initial.
+- Docker incorpora Alembic, su configuración y las migraciones.
+- Upgrade aplicado a cursos_abiertos; alembic current indica head.
+- alembic check no detecta diferencias con los modelos.
+- Repetición de upgrade y reversión verificadas en esquemas de testing.
+- Catálogo mediante Nginx: HTTP 200 con lista vacía.
+- Suite completa: 312 pruebas aprobadas; cobertura de app con ramas: 92%.
+- Commit, PR y merge hacia dev pendientes de registrar.
+
+### Evidencia de T10 — Healthchecks de Docker Compose
+
+- Rama `feat/T10-compose-healthchecks`.
+- PostgreSQL se comprueba con `pg_isready`, el backend con su healthcheck
+  del Dockerfile y Nginx mediante `/health`.
+- `docker compose ps` mostró los tres servicios `healthy`.
+- `GET /api/v1/courses` a través de Nginx devolvió HTTP 200 y una lista vacía.
+- La verificación se hizo con la revisión `0001_initial` aplicada.
+
+### Cierre de T11 — Evidencia de integración
+
+| Ticket | Evidencia |
+| --- | --- |
+| T1–T3 | Reglas y pruebas unitarias integradas en los PR #8, #9 y #10. |
+| T4 | Repositorio de cursos y pruebas PostgreSQL recuperados en dev por el PR #15. |
+| T5 | Flujo HTTP de aportes, sesiones y CSRF integrado en el PR #16. |
+| T6 | Hook del catálogo integrado en el PR #19. Pasaron 23 pruebas, lint y build. |
+| T7 | PR #20. Arranque, usuario sin privilegios y healthcheck verificados. Tamaño pendiente: 273,97 MB frente al límite de 100 MB. |
+| T8 | Exclusiones de los contextos Docker verificadas en el PR #22. |
+| T9 | PR #23. Nginx, SPA, proxy y caché verificados. Imagen de 20,90 MB. |
+| Migraciones | PR #24. Catálogo HTTP 200 y 312 pruebas de backend aprobadas, con 92% de cobertura de app con ramas. |
+| T10 | PR #25. Tres servicios healthy y catálogo HTTP 200 a través de Nginx. |
+
+### Retrospectiva
+
+- Las pruebas previas a cada PR ayudaron a detectar errores antes de integrar.
+- PostgreSQL aislado permitió comprobar persistencia y migraciones.
+- Los merges accidentales hacia main hicieron necesario verificar la rama base en cada PR.
+- El catálogo se comprobó a través de Nginx después de aplicar la migración inicial.
+- El tamaño del backend queda como mejora pendiente y se conserva la medición real.
+
+El historial conserva commits anteriores que no cumplen Conventional Commits.

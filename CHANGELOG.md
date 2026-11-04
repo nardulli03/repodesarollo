@@ -33,7 +33,21 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - 23 pruebas con Vitest y Testing Library, incluyendo cancelación
   y protección frente a respuestas antiguas.
 - Búsqueda y navegación entre páginas en el catálogo.
+- Backend con Dockerfile de dos etapas, dependencias sin herramientas
+  de desarrollo, ejecución como appuser y healthcheck HTTP.
+- Imagen verificada: 273.969.071 bytes. El objetivo de menos de 100 MB
+  todavía no se cumple.
+- Archivos .dockerignore para backend y frontend que excluyen entornos
+  locales, cachés, pruebas, reportes, variables de entorno y logs.
+- Configuración de Nginx con fallback SPA, proxy /api, headers de
+  seguridad, healthcheck HTTP y caché para assets con hash.
+- Migración inicial de Alembic para usuarios, categorías, cursos,
+  sesiones y revisiones.
+- Dos pruebas de migraciones sobre esquemas temporales de cursos_test.
 
+### Fixed
+- Error DATABASE_UNAVAILABLE del catálogo causado por la ausencia
+  de tablas en la base de desarrollo.
 
 
 ## [v0.1.0] - 2026-10-31
@@ -58,3 +72,5 @@ Los cambios relevantes del proyecto se registran en este archivo.
 - El catálogo consulta PostgreSQL y muestra únicamente cursos publicados,
 con paginación, búsqueda y filtro por categoría.
 - El catálogo utiliza useCursos y permite reintentar sin recargar la página.
+- Frontend compilado con Node 24 y servido desde Nginx Alpine Slim.
+- Compose conserva localhost:5173 y lo conecta al puerto 80 de Nginx.
