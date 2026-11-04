@@ -263,3 +263,27 @@ aval y transiciones de estado.
 - `docker compose ps` mostró los tres servicios `healthy`.
 - `GET /api/v1/courses` a través de Nginx devolvió HTTP 200 y una lista vacía.
 - La verificación se hizo con la revisión `0001_initial` aplicada.
+
+### Cierre de T11 — Evidencia de integración
+
+| Ticket | Evidencia |
+| --- | --- |
+| T1–T3 | Reglas y pruebas unitarias integradas en los PR #8, #9 y #10. |
+| T4 | Repositorio de cursos y pruebas PostgreSQL recuperados en dev por el PR #15. |
+| T5 | Flujo HTTP de aportes, sesiones y CSRF integrado en el PR #16. |
+| T6 | Hook del catálogo integrado en el PR #19. Pasaron 23 pruebas, lint y build. |
+| T7 | PR #20. Arranque, usuario sin privilegios y healthcheck verificados. Tamaño pendiente: 273,97 MB frente al límite de 100 MB. |
+| T8 | Exclusiones de los contextos Docker verificadas en el PR #22. |
+| T9 | PR #23. Nginx, SPA, proxy y caché verificados. Imagen de 20,90 MB. |
+| Migraciones | PR #24. Catálogo HTTP 200 y 312 pruebas de backend aprobadas, con 92% de cobertura de app con ramas. |
+| T10 | PR #25. Tres servicios healthy y catálogo HTTP 200 a través de Nginx. |
+
+### Retrospectiva
+
+- Las pruebas previas a cada PR ayudaron a detectar errores antes de integrar.
+- PostgreSQL aislado permitió comprobar persistencia y migraciones.
+- Los merges accidentales hacia main hicieron necesario verificar la rama base en cada PR.
+- El catálogo se comprobó a través de Nginx después de aplicar la migración inicial.
+- El tamaño del backend queda como mejora pendiente y se conserva la medición real.
+
+El historial conserva commits anteriores que no cumplen Conventional Commits.
