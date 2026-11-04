@@ -244,3 +244,13 @@ aval y transiciones de estado.
   la conexión a cursos_abiertos funciona, pero la base no tiene tablas.
   Migraciones pendientes en una corrección separada.
 
+### Corrección — Migraciones del backend
+- Rama: fix/migraciones-backend.
+- Revisión inicial: 0001_initial.
+- Docker incorpora Alembic, su configuración y las migraciones.
+- Upgrade aplicado a cursos_abiertos; alembic current indica head.
+- alembic check no detecta diferencias con los modelos.
+- Repetición de upgrade y reversión verificadas en esquemas de testing.
+- Catálogo mediante Nginx: HTTP 200 con lista vacía.
+- Suite completa: 312 pruebas aprobadas; cobertura de app con ramas: 92%.
+- Commit, PR y merge hacia dev pendientes de registrar.

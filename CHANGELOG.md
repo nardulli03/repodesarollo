@@ -41,7 +41,13 @@ Los cambios relevantes del proyecto se registran en este archivo.
   locales, cachés, pruebas, reportes, variables de entorno y logs.
 - Configuración de Nginx con fallback SPA, proxy /api, headers de
   seguridad, healthcheck HTTP y caché para assets con hash.
+- Migración inicial de Alembic para usuarios, categorías, cursos,
+  sesiones y revisiones.
+- Dos pruebas de migraciones sobre esquemas temporales de cursos_test.
 
+### Fixed
+- Error DATABASE_UNAVAILABLE del catálogo causado por la ausencia
+  de tablas en la base de desarrollo.
 
 
 ## [v0.1.0] - 2026-10-31
